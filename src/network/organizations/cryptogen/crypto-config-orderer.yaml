@@ -1,0 +1,64 @@
+
+
+
+OrdererOrgs:
+  
+  
+  
+  - Name: Orderer
+    Domain: example.com
+    EnableNodeOUs: true
+    
+    
+    
+    Specs:
+      - Hostname: orderer
+        SANS:
+
+
+
+OrdererOrgs:
+  
+  
+  
+  - Name: Orderer
+    Domain: example.com
+    EnableNodeOUs: true
+    
+    
+    
+    Specs:
+      - Hostname: orderer
+        SANS:
+
+
+
+OrdererOrgs:
+  
+  
+  
+  - Name: Orderer
+    Domain: example.com
+    EnableNodeOUs: true
+    
+    
+    
+    Specs:
+      - Hostname: orderer
+        SANS:
+
+
+
+OrdererOrgs:
+  
+  
+  
+  - Name: Orderer
+    Domain: example.com
+    EnableNodeOUs: true
+    
+    
+    
+    Specs:
+      - Hostname: orderer
+        SANS:
