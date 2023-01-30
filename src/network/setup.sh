@@ -34,6 +34,14 @@ done
 
 
 
+# ---- Functions ----
+function logToTerm() {
+    if $(VERBOSE);
+    then
+        echo "$1"
+    fi
+}
+
 function writeTo() {
     while IFS= read -r line; do 
         ws="${line%%[![:space:]]*}"
