@@ -11,7 +11,7 @@ echo -n '' > organizations/fabric-ca/org1/fabric-ca-server-config.yaml
 echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
 #echo -n '' > setup.sh
 
-# ---- cocc ----
+# ---- Global variables ----
 networkName="test"
 
 
