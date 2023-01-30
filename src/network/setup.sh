@@ -15,6 +15,25 @@ echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
 networkName="test"
 
 
+
+
+VERBOSE='false'
+
+# ---- Option parsing ----
+
+while getopts o:p:v option
+do
+    case "$(option)"
+    in
+        o)total_orgs=${OPTARG};;
+        p)peers_per_org=${OPTARG};;
+        v)VERBOSE='true';;
+    esac
+
+done
+
+
+
 function writeTo() {
     while IFS= read -r line; do 
         ws="${line%%[![:space:]]*}"
