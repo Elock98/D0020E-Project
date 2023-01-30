@@ -1,4 +1,4 @@
-  
+
   $container_name:
     container_name: $container_name
     image: hyperledger/fabric-peer:latest
@@ -14,7 +14,7 @@
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variables
-      - CORE_PEER_ID=$CORE_PEER_ID 
+      - CORE_PEER_ID=$CORE_PEER_ID
       - CORE_PEER_ADDRESS=$CORE_PEER_ADDRESS
       - CORE_PEER_LISTENADDRESS=$CORE_PEER_LISTENADDRESS
       - CORE_PEER_CHAINCODEADDRESS=$CORE_PEER_CHAINCODEADDRESS
@@ -36,4 +36,4 @@
       - $PORTONE
       - $PORTTWO
     networks:
-      - test
+      - $networkName

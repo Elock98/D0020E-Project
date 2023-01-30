@@ -1,4 +1,4 @@
-  
+
   orderer.example.com:
     container_name: orderer.example.com
     image: hyperledger/fabric-orderer:latest
@@ -39,4 +39,4 @@
       - 7053:7053
       - 9443:9443
     networks:
-      - test
+      - $networkName
