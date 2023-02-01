@@ -14,6 +14,10 @@ echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
 # ---- Global variables ----
 networkName="test"
 
+total_orgs=2
+peers_per_org=1
+org_id=1
+peer_id=0
 
 
 
@@ -23,7 +27,7 @@ VERBOSE='false'
 
 while getopts o:p:v option
 do
-    case "$(option)"
+    case "${option}"
     in
         o)total_orgs=${OPTARG};;
         p)peers_per_org=${OPTARG};;
@@ -43,7 +47,7 @@ function logToTerm() {
 }
 
 function writeTo() {
-    while IFS= read -r line; do 
+    while IFS= read -r line; do
         ws="${line%%[![:space:]]*}"
         #echo "$line"
         echo -n "$ws" >> $output
@@ -64,45 +68,52 @@ writeTo
 input=templates/compose/docker-compose-template-orderer.txt
 writeTo
 
-#peer 
-container_name=peer0.org1.example.com
-CORE_PEER_ID=peer0.org1.example.com
-CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-CORE_PEER_CHAINCODEADDRESS=peer0.org1.example.com:7052
-CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
-CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
-CORE_PEER_LOCALMSPID=Org1MSP
-CORE_OPERATIONS_LISTENADDRESS=peer0.org1.example.com:9444
-CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer0org1"}'
-PORTONE=7051:7051
-PORTTWO=9444:9444
-VolONE=../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/fabric
-VolTWO=peer0.org1.example.com:/var/hyperledger/production
-
+#peer
 input=templates/compose/docker-compose-template-peer.txt
-writeTo
+
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    for peer_l in $(seq 0 $(($peers_per_org -1)));
+    do
+        peer_id=$peer_l
+        org_id=$org_l
+
+        container_name="peer$peer_id.org$org_id.example.com"
+        CORE_PEER_ID="peer$peer_id.org$org_id.example.com"
+        CORE_PEER_ADDRESS="peer$peer_id.org$org_id.example.com:7051"
+        CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+        CORE_PEER_CHAINCODEADDRESS="peer$peer_id.org$org_id.example.com:7052"
+        CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+        CORE_PEER_GOSSIP_BOOTSTRAP="peer$peer_id.org$org_id.example.com:7051"
+        CORE_PEER_GOSSIP_EXTERNALENDPOINT="peer$peer_id.org$org_id.example.com:7051"
+        CORE_PEER_LOCALMSPID=Org"$org_id"MSP
+        CORE_OPERATIONS_LISTENADDRESS="peer$peer_id.org$org_id.example.com:9444"
+        CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer'$peer_id'org'$org_id'"}'
+        PORTONE=7051:7051
+        PORTTWO=9444:9444
+        VolONE="../organizations/peerOrganizations/org$org_id.example.com/peers/peer$peer_id.org$org_id.example.com:/etc/hyperledger/fabric"
+        VolTWO="peer$peer_id.org$org_id.example.com:/var/hyperledger/production"
+
+        writeTo
+    done
+done
 
 #peer
-container_name=peer0.org2.example.com
-CORE_PEER_ID=peer0.org2.example.com
-CORE_PEER_ADDRESS=peer0.org2.example.com:9051
-CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-CORE_PEER_CHAINCODEADDRESS=peer0.org2.example.com:9052
-CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
-CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
-CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
-CORE_PEER_LOCALMSPID=Org2MSP
-CORE_OPERATIONS_LISTENADDRESS=peer0.org2.example.com:9445
-CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer0org2"}'
-PORTONE=9051:9051
-PORTTWO=9445:9445
-VolONE=../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
-VolTWO=peer0.org2.example.com:/var/hyperledger/production
-
-input=templates/compose/docker-compose-template-peer.txt
-writeTo
+#container_name=peer0.org2.example.com
+#CORE_PEER_ID=peer0.org2.example.com
+#CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+#CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+#CORE_PEER_CHAINCODEADDRESS=peer0.org2.example.com:9052
+#CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+#CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
+#CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
+#CORE_PEER_LOCALMSPID=Org2MSP
+#CORE_OPERATIONS_LISTENADDRESS=peer0.org2.example.com:9445
+#CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer0org2"}'
+#PORTONE=9051:9051
+#PORTTWO=9445:9445
+#VolONE=../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
+#VolTWO=peer0.org2.example.com:/var/hyperledger/production
 
 #cli
 input=templates/compose/docker-compose-template-cli.txt
