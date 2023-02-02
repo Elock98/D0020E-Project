@@ -80,7 +80,7 @@ tls:
 #############################################################################
 ca:
   # Name of this CA
-  name: $caName
+  name: $caName #VARIABLE#
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -126,14 +126,14 @@ registry:
      - name: admin
        pass: adminpw
        type: client
-       affiliation: '""'
+       affiliation: ""
        attrs:
-          hf.Registrar.Roles: '"*"'
-          hf.Registrar.DelegateRoles: '"*"'
+          hf.Registrar.Roles: "*"
+          hf.Registrar.DelegateRoles: "*"
           hf.Revoker: true
           hf.IntermediateCA: true
           hf.GenCRL: true
-          hf.Registrar.Attributes: '"*"'
+          hf.Registrar.Attributes: "*"
           hf.AffiliationMgr: true
 
 #############################################################################
@@ -168,7 +168,7 @@ ldap:
    # If this is set to true, the "registry" section is ignored.
    enabled: false
    # The URL of the LDAP server
-   'url: ldap://<adminDN>:<adminPassword>@<host>:<port>/<base>'
+   url: ldap://<adminDN>:<adminPassword>@<host>:<port>/<base>
    # TLS configuration for the client connection to the LDAP server
    tls:
       certfiles:
@@ -301,16 +301,16 @@ signing:
 #     CA certificates though it can still issue end entity certificates.
 ###########################################################################
 csr:
-   cn: $csrCn
+   cn: $csrCn #VARIABLE#
    names:
-      - C: $csrNamesC
-        ST: $csrNamesST
-        L: $csrNamesL
-        O: $csrNamesO
+      - C: $csrNamesC #VARIABLE#
+        ST: $csrNamesST #VARIABLE#
+        L: $csrNamesL #VARIABLE#
+        O: $csrNamesO #VARIABLE#
         OU:
    hosts:
      - localhost
-     - $csrHost
+     - $csrHost #VARIABLE#
    ca:
       expiry: 131400h
       pathlength: 1
