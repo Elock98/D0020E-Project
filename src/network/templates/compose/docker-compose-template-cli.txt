@@ -1,4 +1,4 @@
-  
+
   cli:
     container_name: cli
     image: hyperledger/fabric-tools:latest
@@ -20,10 +20,10 @@
       - peer0.org1.example.com
       - peer0.org2.example.com
     networks:
-      - test
+      - $networkName
 
-volumes: 
+volumes:
   orderer.example.com:
   peer0.org1.example.com:
   peer0.org2.example.com:
-  
+

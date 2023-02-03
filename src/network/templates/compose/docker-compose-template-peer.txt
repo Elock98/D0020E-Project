@@ -1,4 +1,4 @@
-  
+
   $container_name: #VARIABLE#
     container_name: $container_name #VARIABLE#
     image: hyperledger/fabric-peer:latest
@@ -36,4 +36,4 @@
       - $PORTONE #VARIABLE#
       - $PORTTWO #VARIABLE#
     networks:
-      - test
+      - $networkName
