@@ -1,7 +1,7 @@
-version: "'3.7'"
+version: '3.7'
 
 networks:
-  $networkName:
-    name: fabric_$networkName
+  $networkName: #VARIABLE#
+    name: fabric_$networkName #VARIABLE#
 
 services:
