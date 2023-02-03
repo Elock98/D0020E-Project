@@ -19,7 +19,8 @@ peers_per_org=1
 org_id=1
 peer_id=0
 
-
+ALL_PEERS_NO_HYPHEN=()
+ALL_PEERS_HYPHEN=()
 
 VERBOSE='false'
 
@@ -46,12 +47,38 @@ function logToTerm() {
     fi
 }
 
+
 function writeTo() {
     while IFS= read -r line; do
-        ws="${line%%[![:space:]]*}"
-        #echo "$line"
-        echo -n "$ws" >> $output
-        eval echo "$line" >> $output
+        if ${VERBOSE};
+        then
+            echo "$line"
+        fi
+
+        if [[ $line =~ .*"#VARIABLE#".* ]]; # Normal variable substitution
+        then
+            ws="${line%%[![:space:]]*}"
+            echo -n "$ws" >> $output
+            eval echo "$line" >> $output
+
+        elif [[ $line =~ .*"#ARRAY#".* ]]; # Array substitution
+        then
+            ws="${line%%[![:space:]]*}"
+
+            # Select array
+            case "$line" in
+                *ALL_PEERS_NO_HYPHEN*) array=("${ALL_PEERS_NO_HYPHEN[@]}");;
+                *ALL_PEERS_HYPHEN*) array=("${ALL_PEERS_HYPHEN[@]}");;
+            esac
+
+            for i in ${!array[@]}; do
+                echo -n "$ws" >> $output
+                eval echo "${array[$i]}" >> $output
+            done
+
+        else #Write the line as it was in the template
+            echo "$line" >> $output
+        fi
     done < $input
 }
 
@@ -94,6 +121,8 @@ do
         VolONE="../organizations/peerOrganizations/org$org_id.example.com/peers/peer$peer_id.org$org_id.example.com:/etc/hyperledger/fabric"
         VolTWO="peer$peer_id.org$org_id.example.com:/var/hyperledger/production"
 
+        ALL_PEERS_NO_HYPHEN+=("$container_name:")
+        ALL_PEERS_HYPHEN+=("- $container_name")
         writeTo
     done
 done
