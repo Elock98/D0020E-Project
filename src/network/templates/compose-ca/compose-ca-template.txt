@@ -1,20 +1,20 @@
   
-  $containerNAME:
+  $containerNAME: #VARIABLE#
     image: hyperledger/fabric-ca:latest
     labels:
       service: hyperledger-fabric
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=$FABRIC_CA_SERVER_CA_NAME
+      - FABRIC_CA_SERVER_CA_NAME=$FABRIC_CA_SERVER_CA_NAME #VARIABLE#
       - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_PORT=$FABRIC_CA_SERVER_PORT
-      - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=$FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS
+      - FABRIC_CA_SERVER_PORT=$FABRIC_CA_SERVER_PORT #VARIABLE#
+      - FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=$FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS #VARIABLE#
     ports:
-      - $PORTONE
-      - $PORTTWO
+      - $PORTONE #VARIABLE#
+      - $PORTTWO #VARIABLE#
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - $VolONE
-    container_name: $containerNAME
+      - $VolONE #VARIABLE#
+    container_name: $containerNAME #VARIABLE#
     networks:
       - test

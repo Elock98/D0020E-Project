@@ -19,7 +19,7 @@ services:
     ports:
       - "7054:7054"
       - "17054:17054"
-    command: sh -c fabric-ca-server start -b admin:adminpw -d
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ../organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server
     container_name: ca_org1
@@ -39,7 +39,7 @@ services:
     ports:
       - "8054:8054"
       - "18054:18054"
-    command: sh -c fabric-ca-server start -b admin:adminpw -d
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ../organizations/fabric-ca/org2:/etc/hyperledger/fabric-ca-server
     container_name: ca_org2
@@ -59,7 +59,7 @@ services:
     ports:
       - "9054:9054"
       - "19054:19054"
-    command: sh -c fabric-ca-server start -b admin:adminpw -d
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
     container_name: ca_orderer

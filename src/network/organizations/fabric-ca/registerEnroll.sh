@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function createOrg1() {
+function createorg1() {
   infoln "Enrolling the CA admin"
   mkdir -p organizations/peerOrganizations/org1.example.com/
 
@@ -86,7 +86,7 @@ function createOrg1() {
   cp "${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/config.yaml"
 }
 
-function createOrg2() {
+function createorg2() {
   infoln "Enrolling the CA admin"
   mkdir -p organizations/peerOrganizations/org2.example.com/
 
@@ -172,7 +172,7 @@ function createOrg2() {
   cp "${PWD}/organizations/peerOrganizations/org2.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/config.yaml"
 }
 
-function createOrderer() {
+function createorderer() {
   infoln "Enrolling the CA admin"
   mkdir -p organizations/ordererOrganizations/example.com
 

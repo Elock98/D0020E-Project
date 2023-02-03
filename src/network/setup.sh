@@ -9,11 +9,10 @@ echo -n '' > configtx/configtx.yaml
 echo -n '' > organizations/fabric-ca/ordererOrg/fabric-ca-server-config.yaml
 echo -n '' > organizations/fabric-ca/org1/fabric-ca-server-config.yaml
 echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
-#echo -n '' > setup.sh
+echo -n '' > network.sh
 
 # ---- Global variables ----
 networkName="test"
-
 total_orgs=2
 peers_per_org=1
 org_id=1
@@ -47,17 +46,26 @@ function logToTerm() {
 }
 
 function writeTo() {
-    while IFS= read -r line; do
-        ws="${line%%[![:space:]]*}"
-        #echo "$line"
-        echo -n "$ws" >> $output
-        eval echo "$line" >> $output
+    while IFS= read -r line; do 
+        if [[ $line =~ .*"#VARIABLE#".* ]]; then #change variable
+            ws="${line%%[![:space:]]*}"
+            echo -n "$ws" >> $output
+            eval echo "$line" >> $output
+        else #normal write
+            echo "$line" >> $output
+        fi
     done < $input
 }
 
 # -------- Set up network.sh ./ --------
+output=network.sh
+input=templates/network/createNet.txt
 
+ORGNAME=org1
+ORGNAME_TEMP=org2
+ORDERERNAME=orderer
 
+writeTo
 
 # -------- Set up compose-net.yaml ./compose --------
 output=compose/compose-net.yaml
@@ -224,7 +232,7 @@ output=configtx/configtx.yaml
 input=templates/configtx/configtx-template.txt
 writeTo
 
-# -------- Set up fabric-ca for orderer ./organizations/fabric-ca/ordererOrg --------
+# -------- Set up fabric-ca for orderer ./organizations/fabric-ca/Orderer --------
 caName=OrdererCA
 csrCn=ca.example.com
 csrNamesC=US

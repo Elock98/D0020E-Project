@@ -16,7 +16,7 @@ Organizations:
 
     # SampleOrg defines an MSP using the sampleconfig.  It should never be used
     # in production but may be used as a template for other definitions
-    - '&OrdererOrg'
+    - &OrdererOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
         Name: OrdererOrg
@@ -33,18 +33,18 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: $'"OR(\'OrdererMSP.member\')"'
+                Rule: $'"OR(\'OrdererMSP.member\')"' #VARIABLE#
             Writers:
                 Type: Signature
-                Rule: $'"OR(\'OrdererMSP.member\')"'
+                Rule: $'"OR(\'OrdererMSP.member\')"' #VARIABLE#
             Admins:
                 Type: Signature
-                Rule: $'"OR(\'OrdererMSP.admin\')"'
+                Rule: $'"OR(\'OrdererMSP.admin\')"' #VARIABLE#
 
         OrdererEndpoints:
             - orderer.example.com:7050
 
-    - '&Org1'
+    - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
         Name: Org1MSP
@@ -60,18 +60,18 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: $'"OR(\'Org1MSP.admin\', \'Org1MSP.peer\', \'Org1MSP.client\')"'
+                Rule: $'"OR(\'Org1MSP.admin\', \'Org1MSP.peer\', \'Org1MSP.client\')"' #VARIABLE#
             Writers:
                 Type: Signature
-                Rule: $'"OR(\'Org1MSP.admin\', \'Org1MSP.client\')"'
+                Rule: $'"OR(\'Org1MSP.admin\', \'Org1MSP.client\')"' #VARIABLE#
             Admins:
                 Type: Signature
-                Rule: $'"OR(\'Org1MSP.admin\')"'
+                Rule: $'"OR(\'Org1MSP.admin\')"' #VARIABLE#
             Endorsement:
                 Type: Signature
-                Rule: $'"OR(\'Org1MSP.peer\')"'
+                Rule: $'"OR(\'Org1MSP.peer\')"' #VARIABLE#
 
-    - '&Org2'
+    - &Org2
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
         Name: Org2MSP
@@ -87,16 +87,16 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: $'"OR(\'Org2MSP.admin\', \'Org2MSP.peer\', \'Org2MSP.client\')"'
+                Rule: $'"OR(\'Org2MSP.admin\', \'Org2MSP.peer\', \'Org2MSP.client\')"' #VARIABLE#
             Writers:
                 Type: Signature
-                Rule: $'"OR(\'Org2MSP.admin\', \'Org2MSP.client\')"'
+                Rule: $'"OR(\'Org2MSP.admin\', \'Org2MSP.client\')"' #VARIABLE#
             Admins:
                 Type: Signature
-                Rule: $'"OR(\'Org2MSP.admin\')"'
+                Rule: $'"OR(\'Org2MSP.admin\')"' #VARIABLE#
             Endorsement:
                 Type: Signature
-                Rule: $'"OR(\'Org2MSP.peer\')"'
+                Rule: $'"OR(\'Org2MSP.peer\')"' #VARIABLE#
 
 ################################################################################
 #
@@ -121,7 +121,7 @@ Capabilities:
     # Channel capabilities apply to both the orderers and the peers and must be
     # supported by both.
     # Set the value of the capability to true to require it.
-    Channel: '&ChannelCapabilities'
+    Channel: &ChannelCapabilities
         # V2_0 capability ensures that orderers and peers behave according
         # to v2.0 channel capabilities. Orderers and peers from
         # prior releases would behave in an incompatible way, and are therefore
@@ -133,7 +133,7 @@ Capabilities:
     # Orderer capabilities apply only to the orderers, and may be safely
     # used with prior release peers.
     # Set the value of the capability to true to require it.
-    Orderer: '&OrdererCapabilities'
+    Orderer: &OrdererCapabilities
         # V2_0 orderer capability ensures that orderers behave according
         # to v2.0 orderer capabilities. Orderers from
         # prior releases would behave in an incompatible way, and are therefore
@@ -145,7 +145,7 @@ Capabilities:
     # Application capabilities apply only to the peer network, and may be safely
     # used with prior release orderers.
     # Set the value of the capability to true to require it.
-    Application: '&ApplicationCapabilities'
+    Application: &ApplicationCapabilities
         # V2_0 application capability ensures that peers behave according
         # to v2.0 application capabilities. Peers from
         # prior releases would behave in an incompatible way, and are therefore
@@ -162,7 +162,7 @@ Capabilities:
 #   genesis block for application related parameters
 #
 ################################################################################
-Application: '&ApplicationDefaults'
+Application: &ApplicationDefaults
 
     # Organizations is the list of orgs which are defined as participants on
     # the application side of the network
@@ -174,22 +174,22 @@ Application: '&ApplicationDefaults'
     Policies:
         Readers:
             Type: ImplicitMeta
-            Rule: '"ANY Readers"'
+            Rule: "ANY Readers"
         Writers:
             Type: ImplicitMeta
-            Rule: '"ANY Writers"'
+            Rule: "ANY Writers"
         Admins:
             Type: ImplicitMeta
-            Rule: '"MAJORITY Admins"'
+            Rule: "MAJORITY Admins"
         LifecycleEndorsement:
             Type: ImplicitMeta
-            Rule: '"MAJORITY Endorsement"'
+            Rule: "MAJORITY Endorsement"
         Endorsement:
             Type: ImplicitMeta
-            Rule: '"MAJORITY Endorsement"'
+            Rule: "MAJORITY Endorsement"
 
     Capabilities:
-        '<<: *ApplicationCapabilities'
+        <<: *ApplicationCapabilities
 ################################################################################
 #
 #   SECTION: Orderer
@@ -198,7 +198,7 @@ Application: '&ApplicationDefaults'
 #   genesis block for orderer related parameters
 #
 ################################################################################
-Orderer: '&OrdererDefaults'
+Orderer: &OrdererDefaults
 
     # Orderer Type: The orderer implementation to start
     OrdererType: etcdraft
@@ -245,18 +245,18 @@ Orderer: '&OrdererDefaults'
     Policies:
         Readers:
             Type: ImplicitMeta
-            Rule: '"ANY Readers"'
+            Rule: "ANY Readers"
         Writers:
             Type: ImplicitMeta
-            Rule: '"ANY Writers"'
+            Rule: "ANY Writers"
         Admins:
             Type: ImplicitMeta
-            Rule: '"MAJORITY Admins"'
+            Rule: "MAJORITY Admins"
         # BlockValidation specifies what signatures must be included in the block
         # from the orderer for the peer to validate it.
         BlockValidation:
             Type: ImplicitMeta
-            Rule: '"ANY Writers"'
+            Rule: "ANY Writers"
 
 ################################################################################
 #
@@ -266,7 +266,7 @@ Orderer: '&OrdererDefaults'
 #   genesis block for channel related parameters.
 #
 ################################################################################
-Channel: '&ChannelDefaults'
+Channel: &ChannelDefaults
     # Policies defines the set of policies at this level of the config tree
     # For Channel policies, their canonical path is
     #   /Channel/<PolicyName>
@@ -274,21 +274,21 @@ Channel: '&ChannelDefaults'
         # Who may invoke the 'Deliver' API
         Readers:
             Type: ImplicitMeta
-            Rule: '"ANY Readers"'
+            Rule: "ANY Readers"
         # Who may invoke the 'Broadcast' API
         Writers:
             Type: ImplicitMeta
-            Rule: '"ANY Writers"'
+            Rule: "ANY Writers"
         # By default, who may modify elements at this config level
         Admins:
             Type: ImplicitMeta
-            Rule: '"MAJORITY Admins"'
+            Rule: "MAJORITY Admins"
 
     # Capabilities describes the channel level capabilities, see the
     # dedicated Capabilities section elsewhere in this file for a full
     # description
     Capabilities:
-        '<<: *ChannelCapabilities'
+        <<: *ChannelCapabilities
 
 ################################################################################
 #
@@ -301,14 +301,14 @@ Channel: '&ChannelDefaults'
 Profiles:
 
     TwoOrgsApplicationGenesis:
-        '<<: *ChannelDefaults'
+        <<: *ChannelDefaults
         Orderer:
-            '<<: *OrdererDefaults'
+            <<: *OrdererDefaults
             Organizations:
                 - *OrdererOrg
             Capabilities: *OrdererCapabilities
         Application:
-            '<<: *ApplicationDefaults'
+            <<: *ApplicationDefaults
             Organizations:
                 - *Org1
                 - *Org2
