@@ -24,7 +24,11 @@ peer_id=0
 RE_PORTS=("7054" "8054")
 peer_port_51=("7051" "9051")
 
+ALL_PEERS_NO_HYPHEN=()
+ALL_PEERS_HYPHEN=()
+CONTAINERS=()
 
+usedPorts=() # Array of ports that have been used
 
 VERBOSE='false'
 
@@ -41,8 +45,6 @@ do
 
 done
 
-
-
 # ---- Functions ----
 function logToTerm() {
     if $(VERBOSE);
@@ -52,7 +54,7 @@ function logToTerm() {
 }
 
 function writeTo2() {
-    while IFS= read -r line2; do 
+    while IFS= read -r line2; do
         if [[ $line2 =~ .*"#VARIABLE#".* ]]; then #change variable
             ws="${line2%%[![:space:]]*}"
             echo -n "$ws" >> $output
@@ -64,7 +66,7 @@ function writeTo2() {
 }
 
 function writeTo() {
-    while IFS= read -r line; do 
+    while IFS= read -r line; do
         if [[ $line =~ .*"#repeatX#".* ]]; then
             for org_l in $(seq 1 $(($total_orgs)));
             do
@@ -107,14 +109,55 @@ function writeTo() {
             done
         fi
 
-        if [[ $line =~ .*"#VARIABLE#".* ]]; then #change variable
+        if [[ $line =~ .*"#VARIABLE#".* ]]; # Normal variable substitution
+        then
             ws="${line%%[![:space:]]*}"
             echo -n "$ws" >> $output
             eval echo "$line" >> $output
-        else #normal write
+
+        elif [[ $line =~ .*"#ARRAY#".* ]]; # Array substitution
+        then
+            ws="${line%%[![:space:]]*}"
+
+            # Select array
+            case "$line" in
+                *ALL_PEERS_NO_HYPHEN*) array=("${ALL_PEERS_NO_HYPHEN[@]}");;
+                *ALL_PEERS_HYPHEN*) array=("${ALL_PEERS_HYPHEN[@]}");;
+            esac
+
+            for i in ${!array[@]}; do
+                echo -n "$ws" >> $output
+                eval echo "${array[$i]}" >> $output
+            done
+
+        else #Write the line as it was in the template
             echo "$line" >> $output
         fi
     done < $input
+}
+
+function CheckPort() {
+    # Takes port to check as arg "$1" and increment
+    # amount as arg "$2".
+    local check_port=$1
+    local increment=$2
+    while true ;
+    do
+        if [[ ! "${usedPorts[*]}" =~ ":$check_port:" ]]; then
+            # If port is not in the used port array
+            # add it to the array and update the
+            # port variable.
+
+            port="$check_port"
+            usedPorts+=(":$check_port:")
+            break
+
+        fi
+
+        # If the port is in the exclusion array
+        # get the next port to check
+        check_port=$(($check_port + $increment))
+    done
 }
 
 # -------- Set up network.sh ./ --------
@@ -170,42 +213,38 @@ do
         peer_id=$peer_l
         org_id=$org_l
 
+        # Set base-port and update it if it's in use
+        port=7050
+        CheckPort $port 2000
+
         container_name="peer$peer_id.org$org_id.example.com"
         CORE_PEER_ID="peer$peer_id.org$org_id.example.com"
-        CORE_PEER_ADDRESS="peer$peer_id.org$org_id.example.com:7051"
-        CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-        CORE_PEER_CHAINCODEADDRESS="peer$peer_id.org$org_id.example.com:7052"
-        CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-        CORE_PEER_GOSSIP_BOOTSTRAP="peer$peer_id.org$org_id.example.com:7051"
-        CORE_PEER_GOSSIP_EXTERNALENDPOINT="peer$peer_id.org$org_id.example.com:7051"
+        CORE_PEER_ADDRESS="peer$peer_id.org$org_id.example.com:$(($port+1))"
+        CORE_PEER_LISTENADDRESS=0.0.0.0:"$(($port+1))"
+        CORE_PEER_CHAINCODEADDRESS="peer$peer_id.org$org_id.example.com:$(($port+2))"
+        CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:"$(($port+2))"
+        CORE_PEER_GOSSIP_BOOTSTRAP="peer$peer_id.org$org_id.example.com:$(($port+1))"
+        CORE_PEER_GOSSIP_EXTERNALENDPOINT="peer$peer_id.org$org_id.example.com:$(($port+1))"
         CORE_PEER_LOCALMSPID=Org"$org_id"MSP
-        CORE_OPERATIONS_LISTENADDRESS="peer$peer_id.org$org_id.example.com:9444"
         CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer'$peer_id'org'$org_id'"}'
-        PORTONE=7051:7051
-        PORTTWO=9444:9444
+        PORTONE=$(($port+1)):$(($port+1))
         VolONE="../organizations/peerOrganizations/org$org_id.example.com/peers/peer$peer_id.org$org_id.example.com:/etc/hyperledger/fabric"
         VolTWO="peer$peer_id.org$org_id.example.com:/var/hyperledger/production"
 
-        #writeTo
+        # Set base-port and update it if it's in use
+        port=9444
+        CheckPort $port 1
+
+        CORE_OPERATIONS_LISTENADDRESS="peer$peer_id.org$org_id.example.com:$port"
+        PORTTWO=$port:$port
+
+        # Add peer to collection
+        ALL_PEERS_NO_HYPHEN+=("$container_name:")
+        ALL_PEERS_HYPHEN+=("- $container_name")
+        CONTAINERS+=("$container_name")
+        writeTo
     done
 done
-
-#peer
-#container_name=peer0.org2.example.com
-#CORE_PEER_ID=peer0.org2.example.com
-#CORE_PEER_ADDRESS=peer0.org2.example.com:9051
-#CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-#CORE_PEER_CHAINCODEADDRESS=peer0.org2.example.com:9052
-#CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
-#CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
-#CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
-#CORE_PEER_LOCALMSPID=Org2MSP
-#CORE_OPERATIONS_LISTENADDRESS=peer0.org2.example.com:9445
-#CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer0org2"}'
-#PORTONE=9051:9051
-#PORTTWO=9445:9445
-#VolONE=../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
-#VolTWO=peer0.org2.example.com:/var/hyperledger/production
 
 #cli
 input=templates/compose/docker-compose-template-cli.txt
@@ -217,23 +256,18 @@ output=compose/docker/docker-compose-net.yaml
 input=templates/container/docker-container-template-const.txt
 writeTo
 
-#peer org1
-container_name=peer0.org1.example.com
-
 input=templates/container/docker-container-template-peer.txt
-writeTo
 
-#peer org2
-container_name=peer0.org2.example.com
-
-input=templates/container/docker-container-template-peer.txt
-writeTo
+for i in ${!CONTAINERS[@]}; do
+    container_name="${CONTAINERS[$i]}"
+    writeTo
+done
 
 #cli
 input=templates/container/docker-container-template-cli.txt
 writeTo
 
-# -------- Set up docker-ca.yaml ./compose --------
+# -------- Set up compose-ca.yaml ./compose --------
 output=compose/compose-ca.yaml
 input=templates/compose/docker-compose-template-const.txt
 writeTo

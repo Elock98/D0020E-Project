@@ -9,6 +9,10 @@
 . scripts/envVar.sh
 . scripts/configUpdate.sh
 
+function calculatePort() {
+    org=$(($1-1))
+    PORT=$((7051 + ($org*2000)))
+}
 
 # NOTE: this must be run in a CLI container since it requires jq and configtxlator 
 createAnchorPeerUpdate() {
@@ -17,18 +21,18 @@ createAnchorPeerUpdate() {
 
   infoln "Generating anchor peer update transaction for Org${ORG} on channel $CHANNEL_NAME"
 
-  if [ $ORG -eq 1 ]; then
-    HOST="peer0.org1.example.com"
-    PORT=7051
-  elif [ $ORG -eq 2 ]; then
-    HOST="peer0.org2.example.com"
-    PORT=9051
-  elif [ $ORG -eq 3 ]; then
-    HOST="peer0.org3.example.com"
-    PORT=11051
-  else
-    errorln "Org${ORG} unknown"
-  fi
+    HOST="peer0.org$ORG.example.com"
+    calculatePort
+#  if [ $ORG -eq 1 ]; then
+#  elif [ $ORG -eq 2 ]; then
+#    HOST="peer0.org2.example.com"
+#    PORT=9051
+#  elif [ $ORG -eq 3 ]; then
+#    HOST="peer0.org3.example.com"
+#    PORT=11051
+#  else
+#    errorln "Org${ORG} unknown"
+#  fi
 
   set -x
   # Modify the configuration to append the anchor peer 
