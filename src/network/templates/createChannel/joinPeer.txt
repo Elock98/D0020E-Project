@@ -1,0 +1,2 @@
+'infoln "Joining org'$org_id' peer to the channel..."' #VARIABLE#
+'joinChannel '$org_id'' #VARIABLE#

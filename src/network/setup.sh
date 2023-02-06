@@ -12,6 +12,7 @@ echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
 echo -n '' > network.sh
 echo -n '' > organizations/fabric-ca/registerEnroll.sh
 echo -n '' > scripts/envVar.sh
+echo -n '' > scripts/createChannel.sh
 
 # ---- Global variables ----
 networkName="test"
@@ -97,6 +98,10 @@ function writeTo() {
                     input2=templates/envVar/usingOrg2.txt
                 elif [[ $line =~ .*"#exportOrgLink#".* ]]; then
                     input2=templates/envVar/exportOrgLink.txt
+                elif [[ $line =~ .*"#JoinPeer#".* ]]; then
+                    input2=templates/createChannel/joinPeer.txt
+                elif [[ $line =~ .*"#SetAnchorPeer#".* ]]; then
+                    input2=templates/createChannel/setAnchorPeer.txt
                 fi
                 writeTo2
             done
@@ -320,6 +325,11 @@ done
 # -------- Set up scripts/envVar.sh ---------
 output=scripts/envVar.sh
 input=templates/envVar/envVar.txt
+writeTo
+
+# -------- Set up scripts/createChannel.sh ---------
+output=scripts/createChannel.sh
+input=templates/createChannel/createChannel.txt
 writeTo
 
 # -------- Set up fabric-ca for orderer ./organizations/fabric-ca/Orderer --------
