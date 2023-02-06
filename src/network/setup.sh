@@ -127,23 +127,6 @@ do
     done
 done
 
-#peer
-#container_name=peer0.org2.example.com
-#CORE_PEER_ID=peer0.org2.example.com
-#CORE_PEER_ADDRESS=peer0.org2.example.com:9051
-#CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-#CORE_PEER_CHAINCODEADDRESS=peer0.org2.example.com:9052
-#CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
-#CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
-#CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
-#CORE_PEER_LOCALMSPID=Org2MSP
-#CORE_OPERATIONS_LISTENADDRESS=peer0.org2.example.com:9445
-#CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer0org2"}'
-#PORTONE=9051:9051
-#PORTTWO=9445:9445
-#VolONE=../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
-#VolTWO=peer0.org2.example.com:/var/hyperledger/production
-
 #cli
 input=templates/compose/docker-compose-template-cli.txt
 writeTo
