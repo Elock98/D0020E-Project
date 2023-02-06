@@ -22,6 +22,8 @@ peer_id=0
 ALL_PEERS_NO_HYPHEN=()
 ALL_PEERS_HYPHEN=()
 
+usedPorts=() # Array of ports that have been used
+
 VERBOSE='false'
 
 # ---- Option parsing ----
@@ -37,8 +39,6 @@ do
 
 done
 
-
-
 # ---- Functions ----
 function logToTerm() {
     if $(VERBOSE);
@@ -46,7 +46,6 @@ function logToTerm() {
         echo "$1"
     fi
 }
-
 
 function writeTo() {
     while IFS= read -r line; do
@@ -82,6 +81,30 @@ function writeTo() {
     done < $input
 }
 
+function CheckPort() {
+    # Takes port to check as arg "$1" and increment
+    # amount as arg "$2".
+    local check_port=$1
+    local increment=$2
+    while true ;
+    do
+        if [[ ! "${usedPorts[*]}" =~ ":$check_port:" ]]; then
+            # If port is not in the used port array
+            # add it to the array and update the
+            # port variable.
+
+            port="$check_port"
+            usedPorts+=(":$check_port:")
+            break
+
+        fi
+
+        # If the port is in the exclusion array
+        # get the next port to check
+        check_port=$(($check_port + $increment))
+    done
+}
+
 # -------- Set up network.sh ./ --------
 
 
@@ -105,22 +128,32 @@ do
         peer_id=$peer_l
         org_id=$org_l
 
+        # Set base-port and update it if it's in use
+        port=7050
+        CheckPort $port 2000
+
         container_name="peer$peer_id.org$org_id.example.com"
         CORE_PEER_ID="peer$peer_id.org$org_id.example.com"
-        CORE_PEER_ADDRESS="peer$peer_id.org$org_id.example.com:7051"
-        CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-        CORE_PEER_CHAINCODEADDRESS="peer$peer_id.org$org_id.example.com:7052"
-        CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-        CORE_PEER_GOSSIP_BOOTSTRAP="peer$peer_id.org$org_id.example.com:7051"
-        CORE_PEER_GOSSIP_EXTERNALENDPOINT="peer$peer_id.org$org_id.example.com:7051"
+        CORE_PEER_ADDRESS="peer$peer_id.org$org_id.example.com:$(($port+1))"
+        CORE_PEER_LISTENADDRESS=0.0.0.0:"$(($port+1))"
+        CORE_PEER_CHAINCODEADDRESS="peer$peer_id.org$org_id.example.com:$(($port+2))"
+        CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:"$(($port+2))"
+        CORE_PEER_GOSSIP_BOOTSTRAP="peer$peer_id.org$org_id.example.com:$(($port+1))"
+        CORE_PEER_GOSSIP_EXTERNALENDPOINT="peer$peer_id.org$org_id.example.com:$(($port+1))"
         CORE_PEER_LOCALMSPID=Org"$org_id"MSP
-        CORE_OPERATIONS_LISTENADDRESS="peer$peer_id.org$org_id.example.com:9444"
         CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG='{"peername":"peer'$peer_id'org'$org_id'"}'
-        PORTONE=7051:7051
-        PORTTWO=9444:9444
+        PORTONE=$(($port+1)):$(($port+1))
         VolONE="../organizations/peerOrganizations/org$org_id.example.com/peers/peer$peer_id.org$org_id.example.com:/etc/hyperledger/fabric"
         VolTWO="peer$peer_id.org$org_id.example.com:/var/hyperledger/production"
 
+        # Set base-port and update it if it's in use
+        port=9444
+        CheckPort $port 1
+
+        CORE_OPERATIONS_LISTENADDRESS="peer$peer_id.org$org_id.example.com:$port"
+        PORTTWO=$port:$port
+
+        # Add peer to collection
         ALL_PEERS_NO_HYPHEN+=("$container_name:")
         ALL_PEERS_HYPHEN+=("- $container_name")
         writeTo
