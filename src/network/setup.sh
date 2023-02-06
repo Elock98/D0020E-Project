@@ -21,6 +21,7 @@ peer_id=0
 
 ALL_PEERS_NO_HYPHEN=()
 ALL_PEERS_HYPHEN=()
+CONTAINERS=()
 
 usedPorts=() # Array of ports that have been used
 
@@ -156,6 +157,7 @@ do
         # Add peer to collection
         ALL_PEERS_NO_HYPHEN+=("$container_name:")
         ALL_PEERS_HYPHEN+=("- $container_name")
+        CONTAINERS+=("$container_name")
         writeTo
     done
 done
@@ -170,23 +172,18 @@ output=compose/docker/docker-compose-net.yaml
 input=templates/container/docker-container-template-const.txt
 writeTo
 
-#peer org1
-container_name=peer0.org1.example.com
-
 input=templates/container/docker-container-template-peer.txt
-writeTo
 
-#peer org2
-container_name=peer0.org2.example.com
-
-input=templates/container/docker-container-template-peer.txt
-writeTo
+for i in ${!CONTAINERS[@]}; do
+    container_name="${CONTAINERS[$i]}"
+    writeTo
+done
 
 #cli
 input=templates/container/docker-container-template-cli.txt
 writeTo
 
-# -------- Set up docker-ca.yaml ./compose --------
+# -------- Set up compose-ca.yaml ./compose --------
 output=compose/compose-ca.yaml
 input=templates/compose/docker-compose-template-const.txt
 writeTo

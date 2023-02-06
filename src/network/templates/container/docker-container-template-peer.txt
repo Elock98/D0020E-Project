@@ -1,6 +1,6 @@
 
-  $container_name:
-    container_name: $container_name
+  $container_name: #VARIABLE#
+    container_name: $container_name #VARIABLE#
     image: hyperledger/fabric-peer:latest
     labels:
       service: hyperledger-fabric
