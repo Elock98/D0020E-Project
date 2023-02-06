@@ -1,0 +1,1 @@
+'export PEER'$peer_id'_ORG'$org_id'_CA=${PWD}/organizations/peerOrganizations/org'$org_id'.example.com/tlsca/tlsca.org'$org_id'.example.com-cert.pem' #VARIABLE#

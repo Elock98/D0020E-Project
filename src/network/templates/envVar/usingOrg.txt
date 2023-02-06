@@ -1,0 +1,4 @@
+        'export CORE_PEER_LOCALMSPID="Org'$org_id'MSP"' #VARIABLE#
+        'export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG'$org_id'_CA' #VARIABLE#
+        'export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org'$org_id'.example.com/users/Admin@org'$org_id'.example.com/msp' #VARIABLE#
+        'export CORE_PEER_ADDRESS=localhost:'$peer51'' #VARIABLE#

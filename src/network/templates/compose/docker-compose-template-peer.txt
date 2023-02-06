@@ -36,4 +36,4 @@
       - $PORTONE #VARIABLE#
       - $PORTTWO #VARIABLE#
     networks:
-      - $networkName
+      - $networkName #VARIABLE#

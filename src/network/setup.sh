@@ -1,4 +1,4 @@
-echo -n '' > compose/compose-net.yaml
+#echo -n '' > compose/compose-net.yaml
 echo -n '' > compose/docker/docker-compose-net.yaml
 echo -n '' > compose/compose-couch.yaml
 echo -n '' > compose/compose-ca.yaml
@@ -10,6 +10,8 @@ echo -n '' > organizations/fabric-ca/ordererOrg/fabric-ca-server-config.yaml
 echo -n '' > organizations/fabric-ca/org1/fabric-ca-server-config.yaml
 echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
 echo -n '' > network.sh
+echo -n '' > organizations/fabric-ca/registerEnroll.sh
+echo -n '' > scripts/envVar.sh
 
 # ---- Global variables ----
 networkName="test"
@@ -17,6 +19,9 @@ total_orgs=2
 peers_per_org=1
 org_id=1
 peer_id=0
+
+RE_PORTS=("7054" "8054")
+peer_port_51=("7051" "9051")
 
 
 
@@ -45,8 +50,58 @@ function logToTerm() {
     fi
 }
 
+function writeTo2() {
+    while IFS= read -r line2; do 
+        if [[ $line2 =~ .*"#VARIABLE#".* ]]; then #change variable
+            ws="${line2%%[![:space:]]*}"
+            echo -n "$ws" >> $output
+            eval echo "$line2" >> $output
+        else #normal write
+            echo "$line2" >> $output
+        fi
+    done < $input2
+}
+
 function writeTo() {
     while IFS= read -r line; do 
+        if [[ $line =~ .*"#repeatX#".* ]]; then
+            for org_l in $(seq 1 $(($total_orgs)));
+            do
+                org_id=$org_l
+                peer51=${peer_port_51[$org_l -1]}
+                if [[ $line =~ .*"#orgCrypto#".* ]]; then
+                    input2=templates/network/orgCrypto.txt
+                elif [[ $line =~ .*"#orgCA#".* ]]; then
+                    input2=templates/network/orgCA.txt
+                elif [[ $line =~ .*"#removeOrg#".* ]]; then
+                    input2=templates/network/removeOrg.txt
+                elif [[ $line =~ .*"#defOrgs#".* ]]; then
+                    input2=templates/configtx/createOrg.txt
+                elif [[ $line =~ .*"#listOrgs#".* ]]; then
+                    input2=templates/configtx/listOrgs.txt
+                elif [[ $line =~ .*"#usingOrg#".* ]]; then
+                    if [ $org_l == 1 ]; then
+                        input2=templates/envVar/ifState.txt
+                    else
+                        input2=templates/envVar/elifState.txt
+                    fi
+                    writeTo2
+                    input2=templates/envVar/usingOrg.txt
+                elif [[ $line =~ .*"#usingOrg2#".* ]]; then
+                    if [ $org_l == 1 ]; then
+                        input2=templates/envVar/ifState.txt
+                    else
+                        input2=templates/envVar/elifState.txt
+                    fi
+                    writeTo2
+                    input2=templates/envVar/usingOrg2.txt
+                elif [[ $line =~ .*"#exportOrgLink#".* ]]; then
+                    input2=templates/envVar/exportOrgLink.txt
+                fi
+                writeTo2
+            done
+        fi
+
         if [[ $line =~ .*"#VARIABLE#".* ]]; then #change variable
             ws="${line%%[![:space:]]*}"
             echo -n "$ws" >> $output
@@ -61,20 +116,44 @@ function writeTo() {
 output=network.sh
 input=templates/network/createNet.txt
 
-ORGNAME=org1
-ORGNAME_TEMP=org2
+#org_id=1
+#ORGNAME_TEMP=org2
 ORDERERNAME=orderer
 
+writeTo
+
+# -------- Set up registerEnroll.sh ./organizations/fabric-ca --------
+output=organizations/fabric-ca/registerEnroll.sh
+#peer
+input=templates/registerEnroll/createOrg.txt
+
+#*RE_PORTS*) array=("${RE_PORTS[@]}");;
+
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    for peer_l in $(seq 0 $(($peers_per_org -1)));
+    do
+        peer_id=$peer_l
+        org_id=$org_l
+        portnum=${RE_PORTS[$org_l -1]}
+
+        writeTo
+    done
+done
+
+
+#orderer
+input=templates/registerEnroll/createOrderer.txt
 writeTo
 
 # -------- Set up compose-net.yaml ./compose --------
 output=compose/compose-net.yaml
 #top
 input=templates/compose/docker-compose-template-const.txt
-writeTo
+#writeTo
 #orderer
 input=templates/compose/docker-compose-template-orderer.txt
-writeTo
+#writeTo
 
 #peer
 input=templates/compose/docker-compose-template-peer.txt
@@ -102,7 +181,7 @@ do
         VolONE="../organizations/peerOrganizations/org$org_id.example.com/peers/peer$peer_id.org$org_id.example.com:/etc/hyperledger/fabric"
         VolTWO="peer$peer_id.org$org_id.example.com:/var/hyperledger/production"
 
-        writeTo
+        #writeTo
     done
 done
 
@@ -125,7 +204,7 @@ done
 
 #cli
 input=templates/compose/docker-compose-template-cli.txt
-writeTo
+#writeTo
 
 # -------- Set up docker-compose-net.yaml ./compose/docker --------
 output=compose/docker/docker-compose-net.yaml
@@ -230,6 +309,17 @@ writeTo
 # -------- Setp up configtx ./configtx --------
 output=configtx/configtx.yaml
 input=templates/configtx/configtx-template.txt
+
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    org_id=$org_l
+    writeTo
+
+done
+
+# -------- Set up scripts/envVar.sh ---------
+output=scripts/envVar.sh
+input=templates/envVar/envVar.txt
 writeTo
 
 # -------- Set up fabric-ca for orderer ./organizations/fabric-ca/Orderer --------

@@ -149,9 +149,27 @@ function createOrgs() {
     fi
     infoln "Generating certificates using cryptogen tool"
 
+    ###CreateOrgCrypto
+    infoln "Creating org$org_id Identities" #VARIABLE#
 
-    #repeatX##orgCrypto#
+    set -x
+    cryptogen generate --config=./organizations/cryptogen/crypto-config-org$org_id.yaml --output="organizations" #VARIABLE#
+    res=$?
+    { set +x; } 2>/dev/null
+    if [ $res -ne 0 ]; then
+      fatalln "Failed to generate certificates..."
+    fi
 
+    infoln "Creating $ORGNAME_TEMP Identities" #VARIABLE#
+
+    set -x
+    cryptogen generate --config=./organizations/cryptogen/crypto-config-$ORGNAME_TEMP.yaml --output="organizations" #VARIABLE#
+    res=$?
+    { set +x; } 2>/dev/null
+    if [ $res -ne 0 ]; then
+      fatalln "Failed to generate certificates..."
+    fi
+    ###
 
     ###CreateOrdererCrypto
     infoln "Creating $ORDERERNAME Identities" #VARIABLE#
@@ -183,9 +201,13 @@ function createOrgs() {
       fi
     done
 
-    
-    #repeatX##orgCA#
+    ###CreateOrgCA
+    infoln "Creating org$org_id Identities" #VARIABLE#
+    createorg$org_id #VARIABLE#
 
+    infoln "Creating $ORGNAME_TEMP Identities" #VARIABLE#
+    create$ORGNAME_TEMP #VARIABLE#
+    ###
 
     ###CreateOrdererCA
     infoln "Creating $ORDERERNAME Identities" #VARIABLE#
@@ -299,7 +321,6 @@ function deployCCAAS() {
 
 # Tear down running network
 function networkDown() {
-  . ../setupEnv.sh
 
   COMPOSE_BASE_FILES="-f compose/${COMPOSE_FILE_BASE} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_BASE}"
   COMPOSE_COUCH_FILES="-f compose/${COMPOSE_FILE_COUCH} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_COUCH}"
@@ -327,9 +348,10 @@ function networkDown() {
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
     ## remove fabric ca artifacts
 
-    
-    #repeatX##removeOrg#
-
+    ###REMOVE-ORG
+    '${CONTAINER_CLI}' run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/'org$org_id'/msp organizations/fabric-ca/'org$org_id'/tls-cert.pem organizations/fabric-ca/'$ORGNAME'/ca-cert.pem organizations/fabric-ca/'org$org_id'/IssuerPublicKey organizations/fabric-ca/'$org$org_id'/IssuerRevocationPublicKey organizations/fabric-ca/'org$org_id'/fabric-ca-server.db' #VARIABLE#
+    '${CONTAINER_CLI}' run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/'$ORGNAME_TEMP'/msp organizations/fabric-ca/'$ORGNAME_TEMP'/tls-cert.pem organizations/fabric-ca/'$ORGNAME_TEMP'/ca-cert.pem organizations/fabric-ca/'$ORGNAME_TEMP'/IssuerPublicKey organizations/fabric-ca/'$ORGNAME_TEMP'/IssuerRevocationPublicKey organizations/fabric-ca/'$ORGNAME_TEMP'/fabric-ca-server.db' #VARIABLE#
+    ###
 
     ###REMOVE-ORDERER
     '${CONTAINER_CLI}' run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/'$ORDERERNAME'Org/msp organizations/fabric-ca/'$ORDERERNAME'Org/tls-cert.pem organizations/fabric-ca/'$ORDERERNAME'Org/ca-cert.pem organizations/fabric-ca/'$ORDERERNAME'Org/IssuerPublicKey organizations/fabric-ca/'$ORDERERNAME'Org/IssuerRevocationPublicKey organizations/fabric-ca/'$ORDERERNAME'Org/fabric-ca-server.db' #VARIABLE#
@@ -338,7 +360,6 @@ function networkDown() {
     # remove channel and script artifacts
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf channel-artifacts log.txt *.tar.gz'
   fi
-  deleteFiles
 }
 
 # Using crpto vs CA. default is cryptogen

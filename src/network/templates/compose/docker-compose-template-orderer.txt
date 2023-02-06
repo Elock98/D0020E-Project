@@ -39,4 +39,4 @@
       - 7053:7053
       - 9443:9443
     networks:
-      - $networkName
+      - $networkName #VARIABLE#
