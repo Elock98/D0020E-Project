@@ -5,7 +5,7 @@ networks:
     name: fabric_test
 
 services:
-  
+
   orderer.example.com:
     container_name: orderer.example.com
     image: hyperledger/fabric-orderer:latest
@@ -47,7 +47,7 @@ services:
       - 9443:9443
     networks:
       - test
-  
+
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
     image: hyperledger/fabric-peer:latest
@@ -86,7 +86,7 @@ services:
       - 9444:9444
     networks:
       - test
-  
+
   peer0.org2.example.com:
     container_name: peer0.org2.example.com
     image: hyperledger/fabric-peer:latest
@@ -125,7 +125,7 @@ services:
       - 9445:9445
     networks:
       - test
-  
+
   cli:
     container_name: cli
     image: hyperledger/fabric-tools:latest
@@ -149,7 +149,7 @@ services:
     networks:
       - test
 
-volumes: 
+volumes:
   orderer.example.com:
   peer0.org1.example.com:
   peer0.org2.example.com:
