@@ -1,4 +1,4 @@
-#echo -n '' > compose/compose-net.yaml
+echo -n '' > compose/compose-net.yaml
 echo -n '' > compose/docker/docker-compose-net.yaml
 echo -n '' > compose/compose-couch.yaml
 echo -n '' > compose/compose-ca.yaml
@@ -198,10 +198,10 @@ writeTo
 output=compose/compose-net.yaml
 #top
 input=templates/compose/docker-compose-template-const.txt
-#writeTo
+writeTo
 #orderer
 input=templates/compose/docker-compose-template-orderer.txt
-#writeTo
+writeTo
 
 #peer
 input=templates/compose/docker-compose-template-peer.txt
@@ -248,7 +248,7 @@ done
 
 #cli
 input=templates/compose/docker-compose-template-cli.txt
-#writeTo
+writeTo
 
 # -------- Set up docker-compose-net.yaml ./compose/docker --------
 output=compose/docker/docker-compose-net.yaml

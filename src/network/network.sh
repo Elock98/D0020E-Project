@@ -149,8 +149,9 @@ function createOrgs() {
     fi
     infoln "Generating certificates using cryptogen tool"
 
-    ###CreateOrgCrypto
-    infoln Creating org1 Identities
+
+    
+    infoln "Creating org1 Identities"
 
     set -x
     cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output=organizations
@@ -159,8 +160,8 @@ function createOrgs() {
     if [ $res -ne 0 ]; then
       fatalln "Failed to generate certificates..."
     fi
-
-    infoln Creating org2 Identities
+    
+    infoln "Creating org2 Identities"
 
     set -x
     cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output=organizations
@@ -169,7 +170,8 @@ function createOrgs() {
     if [ $res -ne 0 ]; then
       fatalln "Failed to generate certificates..."
     fi
-    ###
+    #repeatX##orgCrypto#
+
 
     ###CreateOrdererCrypto
     infoln Creating orderer Identities
@@ -201,13 +203,15 @@ function createOrgs() {
       fi
     done
 
-    ###CreateOrgCA
-    infoln Creating org1 Identities
+    
+    
+    infoln "Creating org1 Identities"
     createorg1
-
-    infoln Creating org2 Identities
+    
+    infoln "Creating org2 Identities"
     createorg2
-    ###
+    #repeatX##orgCA#
+
 
     ###CreateOrdererCA
     infoln Creating orderer Identities
@@ -321,6 +325,7 @@ function deployCCAAS() {
 
 # Tear down running network
 function networkDown() {
+  . ../setupEnv.sh
 
   COMPOSE_BASE_FILES="-f compose/${COMPOSE_FILE_BASE} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_BASE}"
   COMPOSE_COUCH_FILES="-f compose/${COMPOSE_FILE_COUCH} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_COUCH}"
@@ -348,18 +353,22 @@ function networkDown() {
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
     ## remove fabric ca artifacts
 
-    ###REMOVE-ORG
-    ${CONTAINER_CLI} run --rm -v /root/go/src/github.com/syko240/D0020E-Project/src/network:/data busybox sh -c cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db
-    ${CONTAINER_CLI} run --rm -v /root/go/src/github.com/syko240/D0020E-Project/src/network:/data busybox sh -c cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca/org2/ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/org2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db
-    ###
+    
+
+    ${CONTAINER_CLI} run --rm -v /root/go/src/github.com/syko240/hyp/D0020E-Project/src/network:/data busybox sh -c cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca//ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db
+
+    ${CONTAINER_CLI} run --rm -v /root/go/src/github.com/syko240/hyp/D0020E-Project/src/network:/data busybox sh -c cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca//ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db
+    #repeatX##removeOrg#
+
 
     ###REMOVE-ORDERER
-    ${CONTAINER_CLI} run --rm -v /root/go/src/github.com/syko240/D0020E-Project/src/network:/data busybox sh -c cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db
+    ${CONTAINER_CLI} run --rm -v /root/go/src/github.com/syko240/hyp/D0020E-Project/src/network:/data busybox sh -c cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db
     ###
 
     # remove channel and script artifacts
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf channel-artifacts log.txt *.tar.gz'
   fi
+  deleteFiles
 }
 
 # Using crpto vs CA. default is cryptogen
