@@ -13,5 +13,7 @@ src/network/system-genesis-block/*
 *.tar.gz
 src/network/log.txt
 
+src/network/organizations/cryptogen/crypto-config-org*
+
 *.swp
 *.save
