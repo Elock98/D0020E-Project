@@ -11,6 +11,7 @@ echo -n '' > network.sh
 echo -n '#!/bin/bash' > organizations/fabric-ca/registerEnroll.sh
 echo -n '' > scripts/envVar.sh
 echo -n '' > scripts/createChannel.sh
+echo -n '' > scripts/deployCC.sh
 
 
 # ---- Global variables ----
@@ -103,8 +104,21 @@ function writeTo() {
                     input2=templates/createChannel/joinPeer.txt
                 elif [[ $line =~ .*"#SetAnchorPeer#".* ]]; then
                     input2=templates/createChannel/setAnchorPeer.txt
+                elif [[ $line =~ .*"#InstallChaincode#".* ]]; then
+                    input2=templates/deployCC/installChainCode.txt
+                elif [[ $line =~ .*"#queryCommit#".* ]]; then
+                    input2=templates/deployCC/queryCommit.txt
                 fi
                 writeTo2
+            done
+        elif [[ $line =~ .*"#appendX#".* ]]; then
+            orgIds=""
+            org=1
+            while [ $org -ne $(($total_orgs+1)) ] 
+            do
+                append=" $org"
+                orgIds=$orgIds$append
+                org=$(($org+1))
             done
         fi
 
@@ -205,6 +219,12 @@ done
 
 #orderer
 input=templates/registerEnroll/createOrderer.txt
+writeTo
+
+# -------- Set up deployCC.sh --------
+
+output=scripts/deployCC.sh
+input=templates/deployCC/deployCC.txt
 writeTo
 
 # -------- Set up compose-net.yaml ./compose --------
