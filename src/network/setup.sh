@@ -1,18 +1,17 @@
+#!/bin/bash
+
 echo -n '' > compose/compose-net.yaml
 echo -n '' > compose/docker/docker-compose-net.yaml
 echo -n '' > compose/compose-couch.yaml
 echo -n '' > compose/compose-ca.yaml
 echo -n '' > organizations/cryptogen/crypto-config-orderer.yaml
-echo -n '' > organizations/cryptogen/crypto-config-org1.yaml
-echo -n '' > organizations/cryptogen/crypto-config-org2.yaml
 echo -n '' > configtx/configtx.yaml
 echo -n '' > organizations/fabric-ca/ordererOrg/fabric-ca-server-config.yaml
-echo -n '' > organizations/fabric-ca/org1/fabric-ca-server-config.yaml
-echo -n '' > organizations/fabric-ca/org2/fabric-ca-server-config.yaml
 echo -n '' > network.sh
-echo -n '' > organizations/fabric-ca/registerEnroll.sh
+echo -n '#!/bin/bash' > organizations/fabric-ca/registerEnroll.sh
 echo -n '' > scripts/envVar.sh
 echo -n '' > scripts/createChannel.sh
+
 
 # ---- Global variables ----
 networkName="test"
@@ -159,6 +158,19 @@ function CheckPort() {
         check_port=$(($check_port + $increment))
     done
 }
+
+# ---- Create org-based files & folders ----
+
+. ../setupEnv.sh
+deleteFiles
+
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    mkdir organizations/fabric-ca/org$org_l
+    touch organizations/fabric-ca/org$org_l/fabric-ca-server-config.yaml
+
+    touch organizations/cryptogen/crypto-config-org$org_l.yaml
+done
 
 # -------- Set up network.sh ./ --------
 output=network.sh
@@ -349,12 +361,8 @@ writeTo
 output=configtx/configtx.yaml
 input=templates/configtx/configtx-template.txt
 
-for org_l in $(seq 1 $(($total_orgs)));
-do
-    org_id=$org_l
-    writeTo
+writeTo
 
-done
 
 # -------- Set up scripts/envVar.sh ---------
 output=scripts/envVar.sh

@@ -1,4 +1,4 @@
-
+#!/bin/bash
 function createorg1() {
   infoln "Enrolling the CA admin"
   mkdir -p organizations/peerOrganizations/org1.example.com/

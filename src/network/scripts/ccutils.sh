@@ -62,6 +62,7 @@ function checkCommitReadiness() {
     { set +x; } 2>/dev/null
     let rc=0
     for var in "$@"; do
+      echo "$var"
       grep "$var" log.txt &>/dev/null || let rc=1
     done
     COUNTER=$(expr $COUNTER + 1)
