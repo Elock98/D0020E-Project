@@ -27,7 +27,7 @@ ALL_PEERS_NO_HYPHEN=()
 ALL_PEERS_HYPHEN=()
 CONTAINERS=()
 
-usedPorts=() # Array of ports that have been used
+usedPorts=(":9054:" ":19054:") # Array of ports that have been used
 
 VERBOSE='false'
 
@@ -159,6 +159,7 @@ function CheckPort() {
     done
 }
 
+
 # ---- Create org-based files & folders ----
 
 . ../setupEnv.sh
@@ -284,29 +285,32 @@ output=compose/compose-ca.yaml
 input=templates/compose/docker-compose-template-const.txt
 writeTo
 
-#ca org1
-containerNAME=ca_org1
-FABRIC_CA_SERVER_CA_NAME=ca-org1
-FABRIC_CA_SERVER_PORT=7054
-FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:17054
-PORTONE='"7054:7054"'
-PORTTWO='"17054:17054"'
-VolONE=../organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    # Calculate port starting from 7054 and 17054
+    # increase by 1000 for each collision.
+    # Note that we should ignore 9054 and 19054
+    # to avoid collision (solved by hardcoding them
+    # into the used ports list).
+    port=7054
+    CheckPort $port 1000
+    p1=$port
 
-input=templates/compose-ca/compose-ca-template.txt
-writeTo
+    port=17054
+    CheckPort $port 1000
+    p2=$port
 
-#ca org2
-containerNAME=ca_org2
-FABRIC_CA_SERVER_CA_NAME=ca-org2
-FABRIC_CA_SERVER_PORT=8054
-FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:18054
-PORTONE='"8054:8054"'
-PORTTWO='"18054:18054"'
-VolONE=../organizations/fabric-ca/org2:/etc/hyperledger/fabric-ca-server
+    containerNAME=ca_org$org_l
+    FABRIC_CA_SERVER_CA_NAME=ca-org$org_l
+    FABRIC_CA_SERVER_PORT=$p1
+    FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:$p2
+    PORTONE='"'$p1':'$p1'"'
+    PORTTWO='"'$p2':'$p2'"'
+    VolONE=../organizations/fabric-ca/org$org_l:/etc/hyperledger/fabric-ca-server
 
-input=templates/compose-ca/compose-ca-template.txt
-writeTo
+    input=templates/compose-ca/compose-ca-template.txt
+    writeTo
+done
 
 input=templates/compose-ca/compose-ca-orderer-template.txt
 writeTo
@@ -316,46 +320,41 @@ output=compose/compose-couch.yaml
 input=templates/compose/docker-compose-template-const.txt
 writeTo
 
-#peer org1
-container_name=couchdb0
-PORTONE='"5984:5984"'
-peerName=peer0.org1.example.com
-CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+db_index=0
 
-input=templates/compose-couch/compose-couch-template.txt
-writeTo
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    default_port=5984
+    port=$default_port
+    CheckPort $port 2000
 
-#peer org2
-container_name=couchdb1
-PORTONE='"7984:5984"'
-peerName=peer0.org2.example.com
-CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+    container_name=couchdb$db_index
+    PORTONE='"'$port':'$default_port'"'
+    peerName=peer0.org$org_l.example.com
+    CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb$db_index:$default_port
 
-input=templates/compose-couch/compose-couch-template.txt
-writeTo
+    input=templates/compose-couch/compose-couch-template.txt
+    writeTo
+
+    db_index=$(($db_index + 1))
+done
 
 # -------- Set up cryptogen orderer ./organizations/cryptogen --------
 output=organizations/cryptogen/crypto-config-orderer.yaml
 input=templates/cryptogen/crypto-config-orderer-template.txt
 writeTo
 
-# -------- Set up cryptogen org1 ./organizations/cryptogen --------
-output=organizations/cryptogen/crypto-config-org1.yaml
+# -------- Set up cryptogen org ./organizations/cryptogen --------
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    output=organizations/cryptogen/crypto-config-org$org_l.yaml
 
-NAME=Org1
-DOMAIN=org1.example.com
+    NAME=Org$org_l
+    DOMAIN=org$org_l.example.com
 
-input=templates/cryptogen/crypto-config-org-template.txt
-writeTo
-
-# -------- Set up cryptogen org2 ./organizations/cryptogen --------
-output=organizations/cryptogen/crypto-config-org2.yaml
-
-NAME=Org2
-DOMAIN=org2.example.com
-
-input=templates/cryptogen/crypto-config-org-template.txt
-writeTo
+    input=templates/cryptogen/crypto-config-org-template.txt
+    writeTo
+done
 
 # -------- Setp up configtx ./configtx --------
 output=configtx/configtx.yaml
@@ -375,6 +374,8 @@ input=templates/createChannel/createChannel.txt
 writeTo
 
 # -------- Set up fabric-ca for orderer ./organizations/fabric-ca/Orderer --------
+# For now we assume only one orderer node in the network.
+
 caName=OrdererCA
 csrCn=ca.example.com
 csrNamesC=US
@@ -387,28 +388,22 @@ output=organizations/fabric-ca/ordererOrg/fabric-ca-server-config.yaml
 input=templates/fabric-ca/fabric-ca-server-config-template.txt
 writeTo
 
-# -------- Set up fabric-ca for org1 ./organizations/fabric-ca/org1 --------
-caName=Org1CA
-csrCn=ca.org1.example.com
-csrNamesC=US
-csrNamesST='"North Carolina"'
-csrNamesL='"Durham"'
-csrNamesO=org1.example.com
-csrHost=org1.example.com
+# -------- Set up fabric-ca for org ./organizations/fabric-ca/org --------
+# All the orgs will be assumed to be located in the same place to
+# make the setup simpler.
 
-output=organizations/fabric-ca/org1/fabric-ca-server-config.yaml
-input=templates/fabric-ca/fabric-ca-server-config-template.txt
-writeTo
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    caName="Org'$org_l'CA"
+    csrCn=ca.org$org_l.example.com
+    csrNamesC=US
+    csrNamesST='"North Carolina"'
+    csrNamesL='"Durham"'
+    csrNamesO=org$org_l.example.com
+    csrHost=org$org_l.example.com
 
-# -------- Set up fabric-ca for org2 ./organizations/fabric-ca/org2 --------
-caName=Org2CA
-csrNamesC=UK
-csrCn=ca.org2.example.com
-csrNamesST='"Hampshire"'
-csrNamesL='"Hursley"'
-csrNamesO=org2.example.com
-csrHost=org2.example.com
+    output=organizations/fabric-ca/org$org_l/fabric-ca-server-config.yaml
+    input=templates/fabric-ca/fabric-ca-server-config-template.txt
+    writeTo
+done
 
-output=organizations/fabric-ca/org2/fabric-ca-server-config.yaml
-input=templates/fabric-ca/fabric-ca-server-config-template.txt
-writeTo
