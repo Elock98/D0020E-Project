@@ -21,8 +21,8 @@ peers_per_org=1
 org_id=1
 peer_id=0
 
-RE_PORTS=("7054" "8054")
-peer_port_51=("7051" "9051")
+RE_PORTS=()
+peer_port_51=()
 
 ALL_PEERS_NO_HYPHEN=()
 ALL_PEERS_HYPHEN=()
@@ -120,6 +120,13 @@ function writeTo() {
                 orgIds=$orgIds$append
                 org=$(($org+1))
             done
+        elif [[ $line =~ .*"#appendOrgs#".* ]]; then
+            orgs=""
+            for org_l in $(seq 1 $(($total_orgs)));
+            do
+                append=" docker_peer0.org${org_l}.example.com"
+                orgs=$orgs$append
+            done
         fi
 
         if [[ $line =~ .*"#VARIABLE#".* ]]; # Normal variable substitution
@@ -187,12 +194,23 @@ do
     touch organizations/cryptogen/crypto-config-org$org_l.yaml
 done
 
+# ---- Setup Ports ----
+
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    port=7051
+    CheckPort $port 2000
+    peer_port_51+=("$port")
+
+    port=7054
+    CheckPort $port 1000
+    RE_PORTS+=("$port")
+done
+
 # -------- Set up network.sh ./ --------
 output=network.sh
 input=templates/network/createNet.txt
 
-#org_id=1
-#ORGNAME_TEMP=org2
 ORDERERNAME=orderer
 
 writeTo
@@ -312,9 +330,7 @@ do
     # Note that we should ignore 9054 and 19054
     # to avoid collision (solved by hardcoding them
     # into the used ports list).
-    port=7054
-    CheckPort $port 1000
-    p1=$port
+    p1=${RE_PORTS[$org_l -1]}
 
     port=17054
     CheckPort $port 1000
@@ -386,6 +402,7 @@ writeTo
 # -------- Set up scripts/envVar.sh ---------
 output=scripts/envVar.sh
 input=templates/envVar/envVar.txt
+
 writeTo
 
 # -------- Set up scripts/createChannel.sh ---------
@@ -414,7 +431,7 @@ writeTo
 
 for org_l in $(seq 1 $(($total_orgs)));
 do
-    caName="Org'$org_l'CA"
+    caName="Org${org_l}CA"
     csrCn=ca.org$org_l.example.com
     csrNamesC=US
     csrNamesST='"North Carolina"'

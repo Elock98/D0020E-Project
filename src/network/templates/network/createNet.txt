@@ -195,7 +195,7 @@ function createOrgs() {
   fi
 
   infoln "Generating CCP files for NULL"
-  ./organizations/ccp-generate.sh
+  './organizations/ccp-generate.sh' $total_orgs ${RE_PORTS[@]} ${peer_port_51[@]} #VARIABLE#
 }
 
 # Once you create the organization crypto material, you need to create the
@@ -316,7 +316,7 @@ function networkDown() {
   # Don't remove the generated artifacts -- note, the ledgers are always removed
   if [ "$MODE" != "restart" ]; then
     # Bring down the network, deleting the volumes
-    ${CONTAINER_CLI} volume rm docker_orderer.example.com docker_peer0.org1.example.com docker_peer0.org2.example.com
+    '${CONTAINER_CLI}' volume rm docker_orderer.example.com $orgs #appendOrgs# #VARIABLE# 
     #Cleanup the chaincode containers
     clearContainers
     #Cleanup images

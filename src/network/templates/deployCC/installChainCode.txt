@@ -1,0 +1,5 @@
+
+infoln '"Installing chaincode on peer0.org'$org_id'..."' #VARIABLE#
+installChaincode $org_id #VARIABLE#
+## query whether the chaincode is installed
+queryInstalled $org_id #VARIABLE#
