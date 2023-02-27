@@ -24,5 +24,7 @@ src/network/scripts/envVar.sh
 src/network/scripts/createChannel.sh
 src/network/scripts/deployCC.sh
 
+src/auction/auction-simple/application-javascript/wallet/*
+
 *.swp
 *.save

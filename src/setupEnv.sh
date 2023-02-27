@@ -2,6 +2,7 @@
 
 function createFiles() {
     mkdir network/configtx
+    mkdir auction/auction-simple/application-javascript/wallet
 	
     touch network/compose/compose-net.yaml
     touch network/compose/docker/docker-compose-net.yaml
