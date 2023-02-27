@@ -108,6 +108,8 @@ function writeTo() {
                     input2=templates/deployCC/installChainCode.txt
                 elif [[ $line =~ .*"#queryCommit#".* ]]; then
                     input2=templates/deployCC/queryCommit.txt
+                elif [[ $line =~ .*"#orgsDep#".* ]]; then
+                    input2=templates/fabric-ca/orgdep.txt
                 fi
                 writeTo2
             done

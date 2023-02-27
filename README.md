@@ -8,7 +8,7 @@ Follow the link below to set up pre requirements:
 Then set up the environment by running the script setupEnv.sh 
 ```
 cd src
-./setupEnv.sh
+./setupEnv.sh setup
 ```
 
 ## Network setup

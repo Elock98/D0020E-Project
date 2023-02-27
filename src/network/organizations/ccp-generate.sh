@@ -41,7 +41,7 @@ do
 done
 
 i=1
-while [ $i -ne $ORGS ] 
+while [ $i -ne $(($ORGS+1)) ] 
 do
     ORG=$i
     P0PORT=${port_51[$i -1]}

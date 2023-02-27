@@ -32,8 +32,12 @@ function deleteFiles() {
     fi
 
     # cryptogen
-    if compgen -G 'organizations/cryptogen/crypto-config-org*' > /dev/null; then # BUG
+    if compgen -G 'organizations/cryptogen/crypto-config-org*' > /dev/null; then
         rm -r organizations/cryptogen/crypto-config-org*
+    fi
+
+    if compgen -G '../auction/auction-simple/application-javascript/wallet/org*' > /dev/null; then
+        rm -r ../auction/auction-simple/application-javascript/wallet/org*
     fi
 }
 
