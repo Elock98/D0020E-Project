@@ -1,0 +1,2 @@
+'infoln "Setting anchor peer for org'$ord_id'..."' #VARIABLE#
+'setAnchorPeer '$org_id'' #VARIABLE#

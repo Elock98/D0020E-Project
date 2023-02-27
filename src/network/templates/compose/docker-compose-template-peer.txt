@@ -1,6 +1,6 @@
-  
-  peer0.org1.example.com:
-    container_name: peer0.org1.example.com
+
+  $container_name: #VARIABLE#
+    container_name: $container_name #VARIABLE#
     image: hyperledger/fabric-peer:latest
     labels:
       service: hyperledger-fabric
@@ -14,26 +14,26 @@
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variables
-      - CORE_PEER_ID=peer0.org1.example.com
-      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.example.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
-      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_ID=$CORE_PEER_ID #VARIABLE#
+      - CORE_PEER_ADDRESS=$CORE_PEER_ADDRESS #VARIABLE#
+      - CORE_PEER_LISTENADDRESS=$CORE_PEER_LISTENADDRESS #VARIABLE#
+      - CORE_PEER_CHAINCODEADDRESS=$CORE_PEER_CHAINCODEADDRESS #VARIABLE#
+      - CORE_PEER_CHAINCODELISTENADDRESS=$CORE_PEER_CHAINCODELISTENADDRESS #VARIABLE#
+      - CORE_PEER_GOSSIP_BOOTSTRAP=$CORE_PEER_GOSSIP_BOOTSTRAP #VARIABLE#
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=$CORE_PEER_GOSSIP_EXTERNALENDPOINT #VARIABLE#
+      - CORE_PEER_LOCALMSPID=$CORE_PEER_LOCALMSPID #VARIABLE#
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_OPERATIONS_LISTENADDRESS=peer0.org1.example.com:9444
+      - CORE_OPERATIONS_LISTENADDRESS=$CORE_OPERATIONS_LISTENADDRESS #VARIABLE#
       - CORE_METRICS_PROVIDER=prometheus
-      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={'"peername"':'"peer0org1"'}
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG=$CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG #VARIABLE#
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-        - ../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/fabric
-        - peer0.org1.example.com:/var/hyperledger/production
+        - $VolONE #VARIABLE#
+        - $VolTWO #VARIABLE#
     working_dir: /root
     command: peer node start
     ports:
-      - 7051:7051
-      - 9444:9444
+      - $PORTONE #VARIABLE#
+      - $PORTTWO #VARIABLE#
     networks:
-      - test
+      - $networkName #VARIABLE#

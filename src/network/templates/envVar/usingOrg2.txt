@@ -1,0 +1,1 @@
+        'export CORE_PEER_ADDRESS=peer'$peer_id'.org'$org_id'.example.com:'$peer51'' #VARIABLE#

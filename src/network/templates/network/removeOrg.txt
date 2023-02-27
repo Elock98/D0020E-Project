@@ -1,0 +1,2 @@
+
+    '${CONTAINER_CLI}' run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/'org$org_id'/msp organizations/fabric-ca/'org$org_id'/tls-cert.pem organizations/fabric-ca/'$ORGNAME'/ca-cert.pem organizations/fabric-ca/'org$org_id'/IssuerPublicKey organizations/fabric-ca/'$org$org_id'/IssuerRevocationPublicKey organizations/fabric-ca/'org$org_id'/fabric-ca-server.db' #VARIABLE#

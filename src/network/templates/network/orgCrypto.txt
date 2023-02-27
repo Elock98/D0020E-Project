@@ -1,0 +1,10 @@
+    
+    infoln '"Creating 'org$org_id' Identities"' #VARIABLE#
+
+    set -x
+    cryptogen generate --config=./organizations/cryptogen/crypto-config-org$org_id.yaml --output="organizations" #VARIABLE#
+    res=$?
+    { set +x; } 2>/dev/null
+    if [ $res -ne 0 ]; then
+      fatalln "Failed to generate certificates..."
+    fi

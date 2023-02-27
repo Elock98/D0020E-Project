@@ -1,6 +1,6 @@
 
-  peer0.org1.example.com:
-    container_name: peer0.org1.example.com
+  $container_name: #VARIABLE#
+    container_name: $container_name #VARIABLE#
     image: hyperledger/fabric-peer:latest
     labels:
       service: hyperledger-fabric
@@ -10,4 +10,4 @@
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_test
     volumes:
       - ./docker/peercfg:/etc/hyperledger/peercfg
-      - '${DOCKER_SOCK}':/host/var/run/docker.sock
+      - ${DOCKER_SOCK}:/host/var/run/docker.sock

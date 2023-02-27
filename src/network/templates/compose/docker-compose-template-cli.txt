@@ -1,5 +1,4 @@
-  
-  cli: 
+  cli:
     container_name: cli
     image: hyperledger/fabric-tools:latest
     labels:
@@ -17,11 +16,10 @@
         - ../organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
         - ../scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
     depends_on:
-      - peer0.org1.example.com
+      $ALL_PEERS_HYPHEN #ARRAY#
     networks:
-      - test
+      - $networkName #VARIABLE#
 
-volumes: 
+volumes:
   orderer.example.com:
-  peer0.org1.example.com:
-  
+  $ALL_PEERS_NO_HYPHEN #ARRAY#
