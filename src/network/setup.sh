@@ -445,4 +445,3 @@ do
     input=templates/fabric-ca/fabric-ca-server-config-template.txt
     writeTo
 done
-

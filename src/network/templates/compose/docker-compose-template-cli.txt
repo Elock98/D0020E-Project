@@ -1,4 +1,3 @@
-
   cli:
     container_name: cli
     image: hyperledger/fabric-tools:latest

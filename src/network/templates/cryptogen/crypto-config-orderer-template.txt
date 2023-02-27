@@ -15,4 +15,3 @@ OrdererOrgs:
       - Hostname: orderer
         SANS:
           - localhost
-          
