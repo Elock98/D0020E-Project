@@ -40,12 +40,8 @@ async function submitBid(ccp,wallet,user,auctionID,bidID) {
 		let auctionJSON = JSON.parse(auctionString);
 
 		let statefulTxn = contract.createTransaction('SubmitBid');
-
-		if (auctionJSON.organizations.length === 2) {
-			statefulTxn.setEndorsingOrganizations(auctionJSON.organizations[0],auctionJSON.organizations[1]);
-		} else {
-			statefulTxn.setEndorsingOrganizations(auctionJSON.organizations[0]);
-		}
+		
+		statefulTxn.setEndorsingOrganizations(...auctionJSON.organizations);
 
 		console.log('\n--> Submit Transaction: add bid to the auction');
 		await statefulTxn.submit(auctionID,bidID);
