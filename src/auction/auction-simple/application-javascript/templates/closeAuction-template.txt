@@ -31,11 +31,7 @@ async function closeAuction(ccp,wallet,user,auctionID) {
 
 		let statefulTxn = contract.createTransaction('CloseAuction');
 
-		if (auctionJSON.organizations.length === 2) {
-			statefulTxn.setEndorsingOrganizations(auctionJSON.organizations[0],auctionJSON.organizations[1]);
-		} else {
-			statefulTxn.setEndorsingOrganizations(auctionJSON.organizations[0]);
-		}
+		statefulTxn.setEndorsingOrganizations(...auctionJSON.organizations);
 
 		console.log('\n--> Submit Transaction: close auction');
 		await statefulTxn.submit(auctionID);
