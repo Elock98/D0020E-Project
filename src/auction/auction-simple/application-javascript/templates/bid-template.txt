@@ -49,7 +49,7 @@ async function bid(ccp,wallet,user,orgMSP,auctionID,price) {
 		console.log('\n--> Submit Transaction: Create the bid that is stored in your organization\'s private data collection');
 		await statefulTxn.submit(auctionID);
 		console.log('*** Result: committed');
-		console.log('*** Result ***SAVE THIS VALUE*** BidID: ' + bidID.toString());
+		console.log('%s\x1b[35m%s\x1b[0m', '*** Result ***SAVE THIS VALUE*** BidID: ', bidID.toString());
 
 		console.log('\n--> Evaluate Transaction: read the bid that was just created');
 		let result = await contract.evaluateTransaction('QueryBid',auctionID,bidID);
