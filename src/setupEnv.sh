@@ -15,7 +15,19 @@ function createFiles() {
     touch network/organizations/fabric-ca/registerEnroll.sh
     touch network/scripts/envVar.sh
     touch network/scripts/createChannel.sh
-    touch network/scripts/deployCC.sh	
+    touch network/scripts/deployCC.sh
+
+    touch auction/test-application/javascript/AppUtil.js
+    touch auction/auction-simple/application-javascript/bid.js    
+    touch auction/auction-simple/application-javascript/closeAuction.js    
+    touch auction/auction-simple/application-javascript/createAuction.js    
+    touch auction/auction-simple/application-javascript/endAuction.js    
+    touch auction/auction-simple/application-javascript/enrollAdmin.js    
+    touch auction/auction-simple/application-javascript/queryAuction.js    
+    touch auction/auction-simple/application-javascript/queryBid.js    
+    touch auction/auction-simple/application-javascript/registerEnrollUser.js    
+    touch auction/auction-simple/application-javascript/revealBid.js    
+    touch auction/auction-simple/application-javascript/submitBid.js    
 }
 
 function setUp() {

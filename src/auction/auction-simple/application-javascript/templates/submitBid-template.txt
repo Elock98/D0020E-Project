@@ -23,7 +23,7 @@ function prettyJSONString(inputString) {
 	}
 }
 
-async function submitBid(ccp,wallet,user,auctionID,bidID) {
+async function submitBid(ccp,wallet,user,orgMSP,auctionID,bidID) {
 	try {
 
 		const gateway = new Gateway();
@@ -39,12 +39,22 @@ async function submitBid(ccp,wallet,user,auctionID,bidID) {
 		let auctionString = await contract.evaluateTransaction('QueryAuction',auctionID);
 		let auctionJSON = JSON.parse(auctionString);
 
+		let qb = await contract.evaluateTransaction('QueryBid',auctionID,bidID);
+		let qa = await contract.evaluateTransaction('QueryAuction',auctionID);
+
 		let statefulTxn = contract.createTransaction('SubmitBid');
 		
 		statefulTxn.setEndorsingOrganizations(...auctionJSON.organizations);
 
 		console.log('\n--> Submit Transaction: add bid to the auction');
-		await statefulTxn.submit(auctionID,bidID);
+
+		let vaild=true;
+
+		if (qb.toString().includes("false") || (qb.toString().includes("true") && qa.toString().includes(orgMSP))) {
+			valid=false;
+		}
+
+		await statefulTxn.submit(auctionID,bidID,valid);
 
 		console.log('\n--> Evaluate Transaction: query the auction to see that our bid was added');
 		let result = await contract.evaluateTransaction('QueryAuction',auctionID);
@@ -72,10 +82,11 @@ async function main() {
 		const bidID = process.argv[5];
 
 		if (org === 'Org1' || org === 'org1') {
+			const orgMSP = 'Org1MSP';
 			const ccp = buildCCPOrg1();
 			const walletPath = path.join(__dirname, 'wallet/org1');
 			const wallet = await buildWallet(Wallets, walletPath);
-			await submitBid(ccp,wallet,user,auctionID,bidID);
+			await submitBid(ccp,wallet,user,orgMSP,auctionID,bidID);
 		}
         //PutNewMainStuff
 		else {
