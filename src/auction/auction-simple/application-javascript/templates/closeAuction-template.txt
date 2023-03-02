@@ -13,7 +13,7 @@ const { buildCCPOrgx, buildWallet, prettyJSONString} = require('../../test-appli
 const myChannel = 'mychannel';
 const myChaincodeName = 'auction';
 
-async function closeAuction(ccp,wallet,user,auctionID) {
+var closeAuction = async function closeAuction(ccp,wallet,user,auctionID) {
 	try {
 
 		const gateway = new Gateway();
@@ -47,9 +47,11 @@ async function closeAuction(ccp,wallet,user,auctionID) {
 		process.exit(1);
 	}
 }
+module.exports.closeAuction = closeAuction;
 
 async function main() {
 	try {
+		if (!process.argv[2].toString().includes("closeAuction.js")) return;
 
 		if (process.argv[2] === undefined || process.argv[3] === undefined ||
             process.argv[4] === undefined) {

@@ -13,6 +13,7 @@ const { buildCCPOrgx, buildWallet } = require('../../test-application/javascript
 const myChannel = 'mychannel';
 const myChaincodeName = 'auction';
 
+const closeAuction = require('./closeAuction.js');
 
 function prettyJSONString(inputString) {
 	if (inputString) {
@@ -23,7 +24,7 @@ function prettyJSONString(inputString) {
 	}
 }
 
-async function submitBid(ccp,wallet,user,orgMSP,auctionID,bidID) {
+async function submitBid(ccp,wallet,user,orgMSP,auctionID,bidID,orgMSPs) {
 	try {
 
 		const gateway = new Gateway();
@@ -61,6 +62,17 @@ async function submitBid(ccp,wallet,user,orgMSP,auctionID,bidID) {
 		console.log('*** Result: Auction: ' + prettyJSONString(result.toString()));
 
 		gateway.disconnect();
+		orgMSPs.forEach(element => {if (!result.toString().includes(element)) { process.exit(0); }});
+		
+		let seller = "";
+		var fs = require('fs');
+		var orgs = fs.readdirSync('./wallet/');
+		orgs.forEach(element => { var files = fs.readdirSync('./wallet/' + element); if (files.includes('seller.id')) { seller = element; } })
+
+		const walletPath = path.join(__dirname, 'wallet/' + seller);
+		const wallet2 = await buildWallet(Wallets, walletPath);
+
+		closeAuction.closeAuction(eval("buildCCPOrg" + seller.slice(-1)+"()"), wallet2, "seller", auctionID);
 	} catch (error) {
 		console.error(`******** FAILED to submit bid: ${error}`);
 		process.exit(1);
@@ -80,13 +92,14 @@ async function main() {
 		const user = process.argv[3];
 		const auctionID = process.argv[4];
 		const bidID = process.argv[5];
+		const orgMSPs = [REPLACEME];
 
 		if (org === 'Org1' || org === 'org1') {
 			const orgMSP = 'Org1MSP';
 			const ccp = buildCCPOrg1();
 			const walletPath = path.join(__dirname, 'wallet/org1');
 			const wallet = await buildWallet(Wallets, walletPath);
-			await submitBid(ccp,wallet,user,orgMSP,auctionID,bidID);
+			await submitBid(ccp,wallet,user,orgMSP,auctionID,bidID,orgMSPs);
 		}
         //PutNewMainStuff
 		else {

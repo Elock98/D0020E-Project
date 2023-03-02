@@ -4,7 +4,7 @@
 rsync -r templates/ ${PWD}
 
 numOfOrgs=$1
-numOfOrgs=${numOfOrgs:="4"}
+#numOfOrgs=${numOfOrgs:="4"}
 
 # For testing purpose
 inputAPPUTIL=AppUtil-template.txt
@@ -24,6 +24,16 @@ function stringBuilder(){
     #result=""
     for (( c=1; c<=$numOfOrgs; c++ ));do
        result+="${template}""${c}, "
+    done
+    result=${result%??}
+    echo "$result"
+}
+
+function stringBuilder2(){
+    template=$1
+    #result=""
+    for (( c=1; c<=$numOfOrgs; c++ ));do
+       result+="${template}""${c}MSP', "
     done
     result=${result%??}
     echo "$result"
@@ -82,6 +92,9 @@ function addOrgs(){
       update "testingtesting.txt" "if" "else if"
       duplicate_function "testingtesting.txt" "$input" "PutNewMainStuff"
       rm testingtesting.txt
+    elif [[ "$line" == *"REPLACEME"* ]]; then
+      array=$(stringBuilder2 "'Org")
+      update "$input" REPLACEME "$array"
     fi
   done < $input > $input.t
   mv $input{.t,} 2>/dev/null
@@ -144,7 +157,7 @@ function complete_main(){
   local function_start=false
 
   while IFS= read -r line; do
-    if [[ $line == *"if"* && $line == *"org1"* && $line == *"==="*  ]]; then
+    if [[ $line == *"if"* && $line == *"org1"* && $line == *"==="* && $line == *"||"* ]]; then
       function_start=true
       echo "$line" >> "$output_file"
     elif [[ $line == *"{"* ]] && [[ $function_start == true ]]; then

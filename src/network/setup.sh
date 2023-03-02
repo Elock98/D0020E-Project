@@ -196,6 +196,12 @@ do
     touch organizations/cryptogen/crypto-config-org$org_l.yaml
 done
 
+cd ../auction/auction-simple/application-javascript/
+
+. generatecode.sh $total_orgs
+
+cd ../../../network/
+
 # ---- Setup Ports ----
 
 for org_l in $(seq 1 $(($total_orgs)));
