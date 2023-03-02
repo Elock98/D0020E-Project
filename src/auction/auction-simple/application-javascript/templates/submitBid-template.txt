@@ -48,7 +48,7 @@ async function submitBid(ccp,wallet,user,orgMSP,auctionID,bidID) {
 
 		console.log('\n--> Submit Transaction: add bid to the auction');
 
-		let vaild=true;
+		let valid=true;
 
 		if (qb.toString().includes("false") || (qb.toString().includes("true") && qa.toString().includes(orgMSP))) {
 			valid=false;
