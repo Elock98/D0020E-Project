@@ -36,6 +36,7 @@ type FullBid struct {
 	Price  int    `json:"price"`
 	Org    string `json:"org"`
 	Bidder string `json:"bidder"`
+	Valid  bool   `json:"valid"`
 }
 
 // BidHash is the structure of a private bid
@@ -310,6 +311,7 @@ func (s *SmartContract) RevealBid(ctx contractapi.TransactionContextInterface, a
 		Price  int    `json:"price"`
 		Org    string `json:"org"`
 		Bidder string `json:"bidder"`
+		Valid  bool   `json:"valid"`
 	}
 
 	// unmarshal bid input
@@ -331,12 +333,15 @@ func (s *SmartContract) RevealBid(ctx contractapi.TransactionContextInterface, a
 		Price:  bidInput.Price,
 		Org:    bidInput.Org,
 		Bidder: bidInput.Bidder,
+		Valid:  bidInput.Valid,
 	}
 
 	// check 4: make sure that the transaction is being submitted is the bidder
 	if bidInput.Bidder != clientID {
 		return fmt.Errorf("Permission denied, client id %v is not the owner of the bid", clientID)
 	}
+
+	NewBid.Valid = true
 
 	revealedBids := make(map[string]FullBid)
 	revealedBids = auction.RevealedBids

@@ -29,7 +29,13 @@ async function bid(ccp,wallet,user,orgMSP,auctionID,price) {
 		let bidder = await contract.evaluateTransaction('GetSubmittingClientIdentity');
 		console.log('*** Result:  Bidder ID is ' + bidder.toString());
 
-		let bidData = { objectType: 'bid', price: parseInt(price), org: orgMSP, bidder: bidder.toString()};
+		let result1 = await contract.evaluateTransaction('QueryAuction',auctionID);
+
+        //Check if submited
+        let valid = true;
+        if (result1.toString().includes(orgMSP)) { valid=false; }
+
+        let bidData = { objectType: 'bid', price: parseInt(price), org: orgMSP, bidder: bidder.toString(), Valid: valid};
 
 		let statefulTxn = contract.createTransaction('Bid');
 		statefulTxn.setEndorsingOrganizations(orgMSP);

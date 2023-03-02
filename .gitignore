@@ -25,6 +25,10 @@ src/network/scripts/createChannel.sh
 src/network/scripts/deployCC.sh
 
 src/auction/auction-simple/application-javascript/wallet/*
+src/auction/auction-simple/application-javascript/*.js
+!src/auction/auction-simple/application-javascript/.eslintrc.js
+src/auction/test-application/javascript/AppUtil.js
+
 
 *.swp
 *.save

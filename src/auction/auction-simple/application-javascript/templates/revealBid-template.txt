@@ -32,7 +32,7 @@ async function addBid(ccp,wallet,user,auctionID,bidID) {
 		// console.log('*** Result:  Bid: ' + prettyJSONString(auctionString.toString()));
 		let auctionJSON = JSON.parse(auctionString);
 
-		let bidData = { objectType: 'bid', price: parseInt(bidJSON.price), org: bidJSON.org, bidder: bidJSON.bidder};
+		let bidData = { objectType: 'bid', price: parseInt(bidJSON.price), org: bidJSON.org, bidder: bidJSON.bidder, Valid: bidJSON.valid};
 		console.log('*** Result:  Bid: ' + JSON.stringify(bidData,null,2));
 
 		let statefulTxn = contract.createTransaction('RevealBid');
@@ -42,8 +42,7 @@ async function addBid(ccp,wallet,user,auctionID,bidID) {
 		});
 
 		statefulTxn.setEndorsingOrganizations(...auctionJSON.organizations);
-
-		await statefulTxn.submit(auctionID,bidID);
+		await statefulTxn.submit(auctionID,bidID,bidJSON.valid);
 
 		console.log('\n--> Evaluate Transaction: query the auction to see that our bid was added');
 		let result = await contract.evaluateTransaction('QueryAuction',auctionID);
