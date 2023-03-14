@@ -1,4 +1,7 @@
 #!/bin/bash
+# MODIFICATION NOTICE: 
+# files been generlized from original and generated during setup
+#
 
 # imports  
 . scripts/envVar.sh

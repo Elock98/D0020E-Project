@@ -1,5 +1,9 @@
 # D0020E-Project
 
+## Licensing
+
+This project is based on [hyperledger fabric samples](https://github.com/hyperledger/fabric-samples). 
+
 ## Setup Environment
 
 Follow the link below to set up pre requirements:

@@ -1,5 +1,8 @@
 /*
 SPDX-License-Identifier: Apache-2.0
+
+MODIFICATION NOTICE:
+FullBid has been extended with a 'valid' flag
 */
 
 package auction
