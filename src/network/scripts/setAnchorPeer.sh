@@ -4,6 +4,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
+# MODIFICATION NOTICE: 
+# added calculation of ports
+#
 
 # import utils
 . scripts/envVar.sh

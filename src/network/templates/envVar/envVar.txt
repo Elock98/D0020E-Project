@@ -4,6 +4,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
+# MODIFICATION NOTICE: 
+# files been generlized from original and generated during setup
+#
 
 # This is a collection of bash functions used by different scripts
 
