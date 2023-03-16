@@ -14,10 +14,12 @@ This project is part of the course ’D0020E - Project in Computer Science and E
     * Modeling using patterns 
     * Iterative and light-weight system design (Evolutionary Design) 
     * Roles, equal opportunities, and gender in software engineering 
-The Project
+
+## The Project
+
 The project assignment has been to create ’A decentralized on-chain auction system based on signatures and blockchain’.  The system should allow a client to connect to a validator network and place an item up for auction. Other clients should be allowed to see the following items that are up for sale and also be able to connect to the validator network and place bids on the sales items. The highest bidder of the auction wins the item.
 
-The Group
+## The Group
 The student group consists of the following four members: 
 
 @syko240 - André Roaas androa-0@student.ltu.se \
