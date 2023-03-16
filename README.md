@@ -1,8 +1,32 @@
-# D0020E-Project
+# D0020E - A decentralized on-chain auction system based on signatures and blockchain
 
-## Licensing
+A decentralized on-chain auction system based on signatures and blockchain
 
-This project is based on [hyperledger fabric samples](https://github.com/hyperledger/fabric-samples). 
+This project is part of the course ’D0020E - Project in Computer Science and Engineering’ at Luleå University of Technology. The aims of the course are to expand the students knowledge and understanding of engineering projects by:
+
+* Demonstrate knowledge and ability to work with software engineering both individually and in a group 
+* Demonstrate knowledge and understanding of proven software engineering methods and theories 
+* Demonstrate insight in how the industry work with software engineering 
+* Demonstrate knowledge within the following areas of software engineering: 
+    * System analysis based on use-cases 
+    * System analysis through requirement engineering 
+    * Modeling in UML (Unified Modelling Language) 
+    * Modeling using patterns 
+    * Iterative and light-weight system design (Evolutionary Design) 
+    * Roles, equal opportunities, and gender in software engineering 
+
+## The Project
+
+The project assignment has been to create ’A decentralized on-chain auction system based on signatures and blockchain’.  The system should allow a client to connect to a validator network and place an item up for auction. Other clients should be allowed to see the following items that are up for sale and also be able to connect to the validator network and place bids on the sales items. The highest bidder of the auction wins the item.
+
+## The Group
+The student group consists of the following four members: 
+
+@syko240 - André Roaas androa-0@student.ltu.se \
+@Elock98 - Emil Lock emiloc-0@student.ltu.se \
+@peggykhialie - Peggy Khialie pegkhi-0@student.ltu.se\
+@linseb-9 - Sebastian Lindgren linseb-9@student.ltu.se
+
 
 ## Setup Environment
 
@@ -153,3 +177,8 @@ node revealBid.js org3 bidder3 Auction <bidID>
 node endAuction.js org4 seller Auction
 ```
 Now the auction status should be set to "Ended" and the winner and winning bid is shown.
+
+
+## Licensing
+
+This project is based on [hyperledger fabric samples](https://github.com/hyperledger/fabric-samples). 
