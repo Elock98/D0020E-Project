@@ -28,16 +28,62 @@ Or you can specify the number of organizations by
 
 ### Network Script
 
-#### Fast start
+You can run the following to deploy the network.
+
+Fast start and the manual start does the same thing.
+
+#### **Fast start**
+
+```
+./fast-start.sh <number>
+```
+
+The number of orgs must be the same for both network setup and network start.
+
+#### **Manuel start**
+
+(Default 2 orgs)
+
+Start the network using cryptogen, this creates crypto material that each organization uses to identify themselves on the network.
+```
+./network.sh up 
+``` 
+
+Shuts down the network.
+```
+./network.sh down
+``` 
+
+Restart network. First runs network down then up.
+```
+./network.sh restart 
+``` 
+
+Start the network using certificate authorities. This is an alternate method in creating the crypto material.
+```
+./network.sh up -ca
+``` 
+
+Creates a channel (default name "mychannel") and join organization peers to channel.
+```
+./network.sh up createChannel
+
+opt:
+./network.sh up createChannel -c <name>
+``` 
+
+Deploy chaincode on channel with a specified signature policy.
+```
+./network.sh deployCC -ccn auction -ccp <path to chaincode> -ccl go -ccep "<signature-policy>"
+``` 
+
+Note the "signature-policy" of the command above, for more information refer to [this page](https://hyperledger-fabric.readthedocs.io/en/latest/endorsement-policies.html).
 
 ## Tests
 
-The network has been configured, setup and verified to be working for up to 15
-organizations at the same time.
+The network has been configured, setup and verified to be working for up to 15 organizations at the same time.
 
-There is also a test script that checks if the setup script generates the expected
-outcome for 2 and 4 organizations. This test script is located under the ***src/test/***
-directory.
+There is also a test script that checks if the setup script generates the expected outcome for 2 and 4 organizations. This test script is located under the ***src/test/*** directory.
 
 ## Potential Risks
 
