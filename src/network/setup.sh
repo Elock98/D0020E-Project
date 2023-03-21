@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Clear all files thats written to
 echo -n '' > compose/compose-net.yaml
 echo -n '' > compose/docker/docker-compose-net.yaml
 echo -n '' > compose/compose-couch.yaml
@@ -45,7 +46,8 @@ do
 
 done
 
-# ---- Functions ----
+# ---- Utility Functions ----
+
 function logToTerm() {
     if $(VERBOSE);
     then
@@ -53,6 +55,10 @@ function logToTerm() {
     fi
 }
 
+# ---- Output Functions ----
+
+#
+# Variable substitution
 function writeTo2() {
     while IFS= read -r line2; do
         if [[ $line2 =~ .*"#VARIABLE#".* ]]; then #change variable
@@ -65,13 +71,19 @@ function writeTo2() {
     done < $input2
 }
 
+#
+# Main output function
 function writeTo() {
     while IFS= read -r line; do
+        #
+        # If a line in a template needs to be repeated multiple times
         if [[ $line =~ .*"#repeatX#".* ]]; then
             for org_l in $(seq 1 $(($total_orgs)));
             do
                 org_id=$org_l
                 peer51=${peer_port_51[$org_l -1]}
+
+                # Handeling for specific cases
                 if [[ $line =~ .*"#orgCrypto#".* ]]; then
                     input2=templates/network/orgCrypto.txt
                 elif [[ $line =~ .*"#orgCA#".* ]]; then
@@ -113,6 +125,8 @@ function writeTo() {
                 fi
                 writeTo2
             done
+        #
+        # If a line in a template needs to be appended multiple times
         elif [[ $line =~ .*"#appendX#".* ]]; then
             orgIds=""
             org=1
@@ -122,6 +136,8 @@ function writeTo() {
                 orgIds=$orgIds$append
                 org=$(($org+1))
             done
+        #
+        # Specific append case
         elif [[ $line =~ .*"#appendOrgs#".* ]]; then
             orgs=""
             for org_l in $(seq 1 $(($total_orgs)));
@@ -131,13 +147,16 @@ function writeTo() {
             done
         fi
 
-        if [[ $line =~ .*"#VARIABLE#".* ]]; # Normal variable substitution
+        #
+        # Normal variable substitution
+        if [[ $line =~ .*"#VARIABLE#".* ]];
         then
             ws="${line%%[![:space:]]*}"
             echo -n "$ws" >> $output
             eval echo "$line" >> $output
-
-        elif [[ $line =~ .*"#ARRAY#".* ]]; # Array substitution
+        #
+        # Array substitution
+        elif [[ $line =~ .*"#ARRAY#".* ]];
         then
             ws="${line%%[![:space:]]*}"
 
@@ -151,12 +170,15 @@ function writeTo() {
                 echo -n "$ws" >> $output
                 eval echo "${array[$i]}" >> $output
             done
-
-        else #Write the line as it was in the template
+        #
+        # Write the line as it was in the template
+        else
             echo "$line" >> $output
         fi
     done < $input
 }
+
+# ---- Setup & Calculate Ports ----
 
 function CheckPort() {
     # Takes port to check as arg "$1" and increment
@@ -182,6 +204,16 @@ function CheckPort() {
     done
 }
 
+for org_l in $(seq 1 $(($total_orgs)));
+do
+    port=7051
+    CheckPort $port 2000
+    peer_port_51+=("$port")
+
+    port=7054
+    CheckPort $port 1000
+    RE_PORTS+=("$port")
+done
 
 # ---- Create org-based files & folders ----
 
@@ -196,24 +228,15 @@ do
     touch organizations/cryptogen/crypto-config-org$org_l.yaml
 done
 
+# ---- Generate auction files ----
+
 cd ../auction/auction-simple/application-javascript/
 
 . generatecode.sh $total_orgs
 
 cd ../../../network/
 
-# ---- Setup Ports ----
-
-for org_l in $(seq 1 $(($total_orgs)));
-do
-    port=7051
-    CheckPort $port 2000
-    peer_port_51+=("$port")
-
-    port=7054
-    CheckPort $port 1000
-    RE_PORTS+=("$port")
-done
+# Setup files
 
 # -------- Set up network.sh ./ --------
 output=network.sh
@@ -223,12 +246,10 @@ ORDERERNAME=orderer
 
 writeTo
 
-# -------- Set up registerEnroll.sh ./organizations/fabric-ca --------
+# -------- Set up organizations/fabric-ca/registerEnroll.sh --------
 output=organizations/fabric-ca/registerEnroll.sh
 #peer
 input=templates/registerEnroll/createOrg.txt
-
-#*RE_PORTS*) array=("${RE_PORTS[@]}");;
 
 for org_l in $(seq 1 $(($total_orgs)));
 do
@@ -242,22 +263,22 @@ do
     done
 done
 
-
 #orderer
 input=templates/registerEnroll/createOrderer.txt
 writeTo
 
-# -------- Set up deployCC.sh --------
+# -------- Set up scripts/deployCC.sh --------
 
 output=scripts/deployCC.sh
 input=templates/deployCC/deployCC.txt
 writeTo
 
-# -------- Set up compose-net.yaml ./compose --------
+# -------- Set up compose/compose-net.yaml --------
 output=compose/compose-net.yaml
 #top
 input=templates/compose/docker-compose-template-const.txt
 writeTo
+
 #orderer
 input=templates/compose/docker-compose-template-orderer.txt
 writeTo
@@ -309,7 +330,7 @@ done
 input=templates/compose/docker-compose-template-cli.txt
 writeTo
 
-# -------- Set up docker-compose-net.yaml ./compose/docker --------
+# -------- Set up compose/docker/docker-compose-net.yaml --------
 output=compose/docker/docker-compose-net.yaml
 #top
 input=templates/container/docker-container-template-const.txt
@@ -326,7 +347,7 @@ done
 input=templates/container/docker-container-template-cli.txt
 writeTo
 
-# -------- Set up compose-ca.yaml ./compose --------
+# -------- Set up compose/compose-ca.yaml --------
 output=compose/compose-ca.yaml
 input=templates/compose/docker-compose-template-const.txt
 writeTo
@@ -359,7 +380,7 @@ done
 input=templates/compose-ca/compose-ca-orderer-template.txt
 writeTo
 
-# -------- Set up docker-couch ./compose --------
+# -------- Set up compose/docker-couch.yaml --------
 output=compose/compose-couch.yaml
 input=templates/compose/docker-compose-template-const.txt
 writeTo
@@ -383,7 +404,7 @@ do
     db_index=$(($db_index + 1))
 done
 
-# -------- Set up cryptogen orderer ./organizations/cryptogen --------
+# -------- Set up organizations/cryptogen/crypto-config-orderer.yaml --------
 output=organizations/cryptogen/crypto-config-orderer.yaml
 input=templates/cryptogen/crypto-config-orderer-template.txt
 writeTo
@@ -400,7 +421,7 @@ do
     writeTo
 done
 
-# -------- Setp up configtx ./configtx --------
+# -------- Setp up configtx/configtx.yaml --------
 output=configtx/configtx.yaml
 input=templates/configtx/configtx-template.txt
 
@@ -418,7 +439,7 @@ output=scripts/createChannel.sh
 input=templates/createChannel/createChannel.txt
 writeTo
 
-# -------- Set up fabric-ca for orderer ./organizations/fabric-ca/Orderer --------
+# -------- Set up fabric-ca for orderer ./organizations/fabric-ca/ordererOrg --------
 # For now we assume only one orderer node in the network.
 
 caName=OrdererCA
