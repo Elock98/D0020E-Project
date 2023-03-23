@@ -1,19 +1,14 @@
 # D0020E - A decentralized on-chain auction system based on signatures and blockchain
 
-A decentralized on-chain auction system based on signatures and blockchain
+This project is part of the course ’D0020E - Project in Computer Science and Engineering’ at Luleå University of Technology. The aims of the course are to expand the students knowledge and understanding of engineering projects.
 
-This project is part of the course ’D0020E - Project in Computer Science and Engineering’ at Luleå University of Technology. The aims of the course are to expand the students knowledge and understanding of engineering projects by:
+## Background
 
-* Demonstrate knowledge and ability to work with software engineering both individually and in a group 
-* Demonstrate knowledge and understanding of proven software engineering methods and theories 
-* Demonstrate insight in how the industry work with software engineering 
-* Demonstrate knowledge within the following areas of software engineering: 
-    * System analysis based on use-cases 
-    * System analysis through requirement engineering 
-    * Modeling in UML (Unified Modelling Language) 
-    * Modeling using patterns 
-    * Iterative and light-weight system design (Evolutionary Design) 
-    * Roles, equal opportunities, and gender in software engineering 
+The popularity of the internet has increased the use of electronic auctions, which is a model where sellers and buyers compete over assets and rights where the highest bid usually wins. There are different types of auctions, the four most common are the English-, Dutch-, sealed-bid- and double auction.
+
+Currently most electronic auction systems are centralized where a third party is acting like a middle man with a web application. These systems requires that the third party is trustworthy and secure since it needs to keep all the information in a database. If the third party somehow is compromised it could leak privileged information or act bias in an auction, especially in a sealed-bid auction. 
+
+One way to avoid these problems is by using a decentralized auction system based on signatures and blockchain where no third party is needed. In a system like this all the participants are connected to a private network where they can create auctions and choose who is allowed to participate. When an auction is complete and a winner is decided a smart contract is written between the auctioneer and the winner. All the data from the auction is saved to a distributed blockchain ledger specifically for that auction. 
 
 ## The Project
 
