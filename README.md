@@ -1,26 +1,23 @@
 # D0020E - A decentralized on-chain auction system based on signatures and blockchain
 
-A decentralized on-chain auction system based on signatures and blockchain
-
-This project is part of the course ’D0020E - Project in Computer Science and Engineering’ at Luleå University of Technology. The aims of the course are to expand the students knowledge and understanding of engineering projects by:
-
-* Demonstrate knowledge and ability to work with software engineering both individually and in a group 
-* Demonstrate knowledge and understanding of proven software engineering methods and theories 
-* Demonstrate insight in how the industry work with software engineering 
-* Demonstrate knowledge within the following areas of software engineering: 
-    * System analysis based on use-cases 
-    * System analysis through requirement engineering 
-    * Modeling in UML (Unified Modelling Language) 
-    * Modeling using patterns 
-    * Iterative and light-weight system design (Evolutionary Design) 
-    * Roles, equal opportunities, and gender in software engineering 
+This project is part of the course ’D0020E - Project in Computer Science and Engineering’ at Luleå University of Technology. The aims of the course are to expand the students knowledge and understanding of engineering projects.
 
 ## The Project
 
 The project assignment has been to create ’A decentralized on-chain auction system based on signatures and blockchain’.  The system should allow a client to connect to a validator network and place an item up for auction. Other clients should be allowed to see the following items that are up for sale and also be able to connect to the validator network and place bids on the sales items. The highest bidder of the auction wins the item.
+You can read more about the project [here](https://www.overleaf.com/read/gkmzgnktkyyz)
+
+## Background
+
+The popularity of the internet has increased the use of electronic auctions, which is a model where sellers and buyers compete over assets and rights where the highest bid usually wins. There are different types of auctions, the four most common are the English-, Dutch-, sealed-bid- and double auction.
+
+Currently most electronic auction systems are centralized where a third party is acting like a middle man with a web application. These systems requires that the third party is trustworthy and secure since it needs to keep all the information in a database. If the third party somehow is compromised it could leak privileged information or act bias in an auction, especially in a sealed-bid auction.
+
+One way to avoid these problems is by using a decentralized auction system based on signatures and blockchain where no third party is needed. In a system like this all the participants are connected to a private network where they can create auctions and choose who is allowed to participate. When an auction is complete and a winner is decided a smart contract is written between the auctioneer and the winner. All the data from the auction is saved to a distributed blockchain ledger specifically for that auction.
+
 
 ## The Group
-The student group consists of the following four members: 
+The student group consists of the following four members:
 
 @syko240 - André Roaas androa-0@student.ltu.se \
 @Elock98 - Emil Lock emiloc-0@student.ltu.se \
@@ -39,12 +36,12 @@ Refer to [this page](https://hyperledger-fabric.readthedocs.io/en/latest/install
 
 ### Setup
 
-Then set up the environment by running the script setupEnv.sh 
+Then set up the environment by running the script setupEnv.sh
 ```
 cd src
 ./setupEnv.sh setup
 ```
-When running this script we create necessary files and folders, install fabric binaries, docker images and set executable privileges to all shell files and binaries. 
+When running this script we create necessary files and folders, install fabric binaries, docker images and set executable privileges to all shell files and binaries.
 
 ## Network setup
 
@@ -58,7 +55,7 @@ When running setup the default number of organizations is 2, to specify how many
 (Example, setup for 4 orgs)
 ```
 ./setup.sh -o 4
-``` 
+```
 
 ## Start the Network
 
@@ -82,14 +79,14 @@ The number of orgs must be the same for both network setup and network start.
 Start by running the following to start up the network with one channel.
 ```
 ./network.sh up createChannel -ca
-``` 
+```
 The -ca flag starts the network using certificate authorities.
 
 Then we also need to deploy the chaincode.
 
 ```
 ./network.sh ./network.sh deployCC -ccn auction -ccp ../auction/auction-simple/chaincode-go/ -ccl go -ccep "OR('Org1MSP.peer','Org2MSP.peer')"
-``` 
+```
 Note the last section of the command above is the endorsement policy, for more information refer to [this page](https://hyperledger-fabric.readthedocs.io/en/latest/endorsement-policies.html).
 
 More information about the network startup can be found [here](src/network/README.md).
@@ -132,11 +129,11 @@ From both generated bids you should see a field "valid", a true or false value. 
 
 We will also be trying to make a new bid for org1 and submit the last one that we did not submit and the new which we just created.
 ```
-node bid.js org1 bidder1 Auction 700 
+node bid.js org1 bidder1 Auction 700
 node submitBid.js org1 bidder1 Auction <BidID>
 node submitBid.js org1 bidder1 Auction <BidID>
 ```
-From the last generated bid we can see in the "valid" field that it's set to false now. And when we tried to submit these bids you should see that both bids are counted as invalid now that org1 has already submitted one valid bid. 
+From the last generated bid we can see in the "valid" field that it's set to false now. And when we tried to submit these bids you should see that both bids are counted as invalid now that org1 has already submitted one valid bid.
 
 Generate and submit a bid for org2.
 ```
@@ -181,4 +178,4 @@ Now the auction status should be set to "Ended" and the winner and winning bid i
 
 ## Licensing
 
-This project is based on [hyperledger fabric samples](https://github.com/hyperledger/fabric-samples). 
+This project is based on [hyperledger fabric samples](https://github.com/hyperledger/fabric-samples).
